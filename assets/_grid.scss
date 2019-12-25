@@ -1,0 +1,30 @@
+%grid {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+[class*='grid-'] {
+  grid-gap: 2rem;
+}
+
+.grid-2, .grid-3, .grid-4, .grid-auto, .grid-reverse {
+  @extend %grid;
+}
+
+@media screen and (min-width: 42rem) {
+  .grid-auto {
+    grid-template-columns: 1fr 3fr;
+  }
+  .grid-reverse {
+    grid-template-columns: 3fr 1fr;
+  }
+  .grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .grid-3  {
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  }
+  .grid-4 {
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+}

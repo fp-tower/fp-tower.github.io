@@ -1,0 +1,8 @@
+{{- define "main" }}
+<div class = 'wrap grid-3 pt_5'>
+  {{- range .Paginator.Pages }}
+    {{- partial "excerpt.html" . }}
+  {{- end }}
+</div>
+{{- template "_internal/pagination.html" . }}
+{{- end }}

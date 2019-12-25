@@ -1,0 +1,15 @@
+<div class = 'excerpt_item'>
+  {{- with .Params.author }}
+  <figure class = 'avatar'>
+    <img src = "/images/{{ anchorize (lower .) }}.jpg">
+  </figure>
+  {{- end }}
+  <h3>
+    <a href = '{{ .Permalink }}' class = 'excerpt_link'>{{ .Title }}</a>
+  </h3>
+  <div class = 'excerpt_meta'>
+    <span class = 'author_name'>{{ .Params.author }}</span> on {{ dateFormat "01 January 2006" .Date }}
+  </div>
+  <p>{{ .Summary | truncate 80 }}</p>
+  {{- partial "tags.html" . }}
+</div>

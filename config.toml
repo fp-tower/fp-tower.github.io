@@ -1,0 +1,19 @@
+baseURL = "/"
+languageCode = "en"
+title = "Fp-tower blog"
+paginate = 9
+dynamicURL = "/"
+
+pygmentsCodefences = true
+pygmentsCodefencesGuessSyntax = true
+pygmentsUseClasses=true
+pygmentsOptions = "linenos=table"
+
+[markup]
+	defaultMarkdownHandler = "goldmark"
+  [markup.goldmark]
+		[markup.goldmark.extensions]
+			typographer = false
+    [markup.goldmark.renderer]
+      unsafe = true
+

@@ -1,0 +1,13 @@
+{{ $social := .Site.Data.social }}
+<footer class = 'footer'>
+  <ul class = 'wrap footer_inner'>
+    <div>
+      © 2019 Truffaut Consultancy LTD. All rights reserved
+    </div>
+    <div class  = 'social_icons'>
+    {{ range $social }}
+      <a href = '{{ .link }}' target = '_blank' rel = 'noopener' title = 'follow on {{ .name }}' class = 'social_icon {{ .name }}'></a>
+    {{ end }}
+    </div>
+  </ul>
+</footer>
