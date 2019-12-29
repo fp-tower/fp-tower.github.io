@@ -1,3 +1,9 @@
+code {
+  white-space: pre-wrap;
+  // word-wrap: break-word;
+  // word-break: break-all;
+}
+
 .highlight {
   table {
     box-shadow: 0 1rem 4rem rgba(0, 0, 0, 0.15);
@@ -30,7 +36,7 @@
     border: none;
     &:first-child {
       &, pre {
-        width: 2.5rem !important;
+        width: 1.5rem !important;
         padding-left: 0;
         padding-right: 0;
         color: $light !important;
@@ -42,6 +48,7 @@
         display: flex;
         align-items: center;
         flex-direction: column;
+        opacity: 0;
       }
     } 
   }
