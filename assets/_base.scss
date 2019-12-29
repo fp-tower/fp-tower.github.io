@@ -80,7 +80,11 @@ hr {
 figcaption {
 	font-style: italic;
 }
-
+figure {
+  img {
+    vertical-align: middle;
+  }
+}
 body.single_post {
 	main {
 		a {
