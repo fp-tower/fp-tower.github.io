@@ -1,6 +1,14 @@
 {{- define "main" }}
 <div class = 'hero_wrap mb_1'>
-  <div class = 'hero'></div>
+  <div class = 'hero'>
+    {{ with .Params.banner }}
+    <div class = 'wrap'>
+      <div class = 'hero_banner'>
+        {{ .text | upper | markdownify }}
+      </div>
+    </div>
+    {{ end }}
+  </div>
 </div>
 <section class = 'wrap'>
   <h2 class = 'center mb_1'>Blog Articles</h2>

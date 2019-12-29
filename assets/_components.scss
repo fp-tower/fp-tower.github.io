@@ -315,6 +315,8 @@
 .hero {
   background-size: cover;
   position: absolute;
+  display: grid;
+  align-items: center;
   top: 0;
   width: 100%;
   height: 100%;
@@ -322,16 +324,29 @@
   background-position: top right;
   transform-origin: 50% 50%;
   transition: transform 10s $ease;
-  &_move {
-    transform: scale(1.25);
+  // &_move {
+  //   transform: scale(1.25);
+  // }
+  .wrap {
+    width: 100%;
   }
   &_wrap {
     height: 64vh;
     max-height: 30rem;
-    background-position: center top;
     position: relative;
     overflow: hidden;
     perspective: 700px;
+  }
+  &_banner {
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: $bg;
+    @media screen and (max-width: 992px) {
+      font-size: 2.25rem;
+    }
+    @media screen and (max-width: 667px) {
+      font-size: 1.75rem;
+    }
   }
 }
 
