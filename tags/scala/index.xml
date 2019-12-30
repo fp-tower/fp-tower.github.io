@@ -13,10 +13,10 @@
     
     <item>
       <title>State of Monocle</title>
-      <link>/2020-12-30-state-of-monocle/</link>
+      <link>/2019-12-30-state-of-monocle/</link>
       <pubDate>Mon, 30 Dec 2019 00:00:00 +0000</pubDate>
       
-      <guid>/2020-12-30-state-of-monocle/</guid>
+      <guid>/2019-12-30-state-of-monocle/</guid>
       <description>Monocle, like many other Scala functional libraries, was inspired by Haskell. In our case, it is the Lens library by Edward Kmett and al.
 In Monocle, we experimented with various optics encoding: pair of functions, Van Laarhoven, and profunctor (see LensImpl). The JVM and Haskell runtime are hugely different, and an encoding that works well in Haskell can be inefficient in Scala. For example, Haskell relies on zero cost wrapper (newtype) to effectively select typeclass instances, but we don&#39;t have an equivalent in Scala/JVM yet (opaque types may help).</description>
     </item>
