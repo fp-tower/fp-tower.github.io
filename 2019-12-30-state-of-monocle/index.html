@@ -110,8 +110,7 @@ be seen in optics composition, i.e. how we build complex optics out of simpler o
 </div>
 </div><p>The entire Haskell library is designed for optics composition to be &quot;just&quot; function composition (<code>.</code> in Haskell).
 It also means one can define an optic without depending on thes Lens library. Unfortunately, we cannot use this
-encoding in Scala 2; we would need polymorphic functions which
-we may have in <a href="(https://github.com/lampepfl/dotty/pull/4672)">Scala 3</a>.</p>
+encoding in Scala 2; we would need polymorphic functions which we may have in <a href="https://github.com/lampepfl/dotty/pull/4672">Scala 3</a>.</p>
 <h3 id="2-overloaded-methods-have-type-inference-issues">2. Overloaded methods have type inference issues</h3>
 <p>Almost all optics compose together, see table:</p>
 <table>
