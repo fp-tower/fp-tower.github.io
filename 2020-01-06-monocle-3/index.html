@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head><title>Monocle 3.x | fp-tower blog</title>
+<meta charset='utf-8'>
+<meta name = 'viewport' content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
+<meta http-equiv = 'X-UA-Compatible' content = 'IE=edge'>
+<meta name = 'SKYPE_TOOLBAR' content = 'SKYPE_TOOLBAR_PARSER_COMPATIBLE' />
+<meta name = 'keywords' content = 'fp-tower blog'>
+<meta property = 'og:locale' content = 'en_US' />
+<meta property = 'og:type' content = 'article' />
+<meta property = 'og:title' content = 'Monocle 3.x' />
+<meta property = 'og:description' content = 'We recently started the development of the next major version of Monocle, Monocle 3.x. In this post, I would like to explain our objectives and …'>
+<meta property = 'og:url' content = '/2020-01-06-monocle-3/' />
+
+<link rel=icon href="/images/apple-coach-logo-only.svg" sizes="any" type="image/svg+xml">
+<link rel="apple-touch-icon" sizes="180x180" href = '/images/icons/apple-touch-icon.png'>
+<link rel="icon" type="image/png" sizes="32x32" href = '/images/icons/favicon-32x32.png'>
+<link rel="icon" type="image/png" sizes="16x16" href= '/images/icons/favicon-16x16.png'>
+<link rel='canonical' href="/2020-01-06-monocle-3/">
+<link rel = 'stylesheet' href = '/main.0d09a4b00ce3573112743c28841ba6dcb57e1271d64422bd6c3b85fd33edbb6ca4ff56b44aff02f81bef575446410728a8ba4b6590987376736a6a49cf319304.css' integrity = 'sha512-DQmksAzjVzESdDwohBum3LV&#43;EnHWRCK9bDuF/TPtu2yk/1a0Sv8C&#43;BvvV1RGQQcoqLpLZZCYc3ZzampJzzGTBA=='>
+
+  </head>
+	<body>
+<header class = 'nav_header'>
+  <div class = 'nav_top wrap'>
+    <a class = 'nav_brand' href='/'>
+      <img src = '/images/logo-white.png' class = 'nav_logo'>
+    </a>
+    <nav class = 'nav center'>
+      <a href = '/' class = 'nav_item '>
+        home
+      </a>
+    </nav>
+    <div class = 'nav_toggle'>&#9776;</div>
+  </div>
+</header>
+
+    <main>
+<div class = 'grid-reverse wrap pt_4'>
+  <div class = 'contents'>
+    <h1>Monocle 3.x</h1>
+    
+<div class = 'author'>
+  <div class = 'avatar'>
+    <img src = '/images/julien-truffaut.jpg'>
+  </div>
+  <div class = 'author_intro'>
+    <h3 class = 'author_name'><a href = 'https://twitter.com/JulienTruffaut' target = '_blank' rel = 'noopener' title = 'Julien Truffaut linkedin'>julien truffaut <span class = 'tag'>follow</span></a></h3>
+    <p class = 'date'>06 Jan . 6 min read</p>
+  </div>
+</div>
+
+    <img src = '/images/cropped-round-mirror-2853432.jpg' alt = 'Monocle 3.x'><p>We recently started the development of the next major version of Monocle, Monocle <a href="https://github.com/julien-truffaut/Monocle/tree/3.x">3.x</a>.
+In this post, I would like to explain our objectives and discuss some of the changes we intend to make.</p>
+<p>Monocle 3.x will be a complete rewrite. It doesn't mean we will change everything, but we will
+question every aspect of the library: optics encoding, API, names, dependencies, etc. We
+defined the following objectives to help us make trade-offs in the new design:</p>
+<ol>
+<li><strong>User-friendly interface.</strong> A user should be able to perform the most common actions without requiring in-depth knowledge of optics.</li>
+<li><strong>Correctness.</strong> Optics follow certain essential principles. Those rules may not be intuitive, but without them, optics
+are not a useful abstraction. The API should make it easy to follow those principles and avoid any undesired behaviours.</li>
+<li><strong>Focus on Scala 3.</strong> The next major version of Scala is coming <a href="https://www.scala-lang.org/blog/2018/04/19/scala-3.html">soon</a>,
+we should design the API firstly with Scala 3 in mind.</li>
+<li><strong>Performance.</strong> Optics are slower than handwritten equivalent code. Nevertheless, we should aim to limit this performance
+hit as much as possible.</li>
+</ol>
+<p>Here are some of the specific changes we have in mind. Everything is still on the table; please voice your opinion
+in Monocle <a href="https://gitter.im/julien-truffaut/Monocle">gitter</a> or issue <a href="https://github.com/julien-truffaut/Monocle/issues">tracker</a>.</p>
+<br>
+<h2 id="inheritance-between-optics">Inheritance between optics</h2>
+<p>There exists a fundamental inheritance relationship between optics. An <code>Iso</code> is a valid <code>Lens</code>. A <code>Lens</code> is a legitimate
+<code>Optional</code>, and so on. The following diagram summarises the optics hierarchy in Monocle.</p>
+<p><img src="/images/monocle-optics-hierarchy.svg" alt="Example image"></p>
+<p>Currently, in Monocle, optics do not extend one another. Instead, we provide <code>asX</code> method to manually upcast optics which
+is inconvenient for end-users.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">name</span><span class="k">:</span> <span class="kt">Lens</span><span class="o">[</span><span class="kt">Person</span>, <span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="o">???</span>
+
+<span class="c1">// Monocle 1.x and 2.x
+</span><span class="c1"></span><span class="k">val</span> <span class="n">nameOptional</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">Person</span>, <span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">name</span><span class="o">.</span><span class="n">asOptional</span>
+
+<span class="c1">// Monocle 3.x
+</span><span class="c1"></span><span class="k">val</span> <span class="n">nameOptional</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">Person</span>, <span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">name</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>The first version of Monocle used inheritance; this was in 2014! However, we encountered some issues with <code>compose</code> that
+motivated us to &quot;temporarily&quot; remove inheritance. Retrospectively, it was a mistake. We should not have favoured ease of
+implementation over ease of utilisation.</p>
+<br>
+<h2 id="object-api-for-most-common-optics-composition">Object API for most common optics composition</h2>
+<p>Composing optics is very similar to composing functions; you need to make the type match, e.g. composing an <code>Optic[A, B]</code>
+and an <code>Optic[B, C]</code>, gives you an <code>Optic[A, C]</code>. Since optics inherit from one another, we can often compose two different
+types of optics; the resulting optic type will be the least upper bound (LUB) of the two types. For example, if you compose
+a <code>Lens[A, B]</code> with a <code>Prism[B, C]</code>, you get an <code>Optional[A, C]</code> because <code>Optional</code> is the first common parent of <code>Lens</code> and
+<code>Prism</code> (see full <a href="http://julien-truffaut.github.io/Monocle/optics.html#optic-composition-table">table</a>).</p>
+<p>In practice, some of the transformations are extremely common. Say we have a <code>Lens[Person, Option[Email]]</code>, and we want to focus
+into the <code>Some</code> part of the <code>Option</code> or we have a <code>Lens[Invoice, List[Item]]</code>, and we want to go a particular index in the list.
+For those common operations, we can provide a dedicated method on all optics:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">optic</span><span class="o">.</span><span class="n">some</span><span class="o">.</span><span class="n">at</span><span class="o">(</span><span class="s">&#34;hello&#34;</span><span class="o">)</span><span class="o">.</span><span class="n">each</span>
+
+<span class="n">optic</span><span class="o">.</span><span class="n">composePrism</span><span class="o">(</span><span class="n">some</span><span class="o">)</span><span class="o">.</span><span class="n">composeLens</span><span class="o">(</span><span class="n">at</span><span class="o">(</span><span class="s">&#34;hello&#34;</span><span class="o">)</span><span class="o">)</span><span class="o">.</span><span class="n">composTraversal</span><span class="o">(</span><span class="n">each</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>This feature should make the API more IDE friendly and reduce the learning curve for new users.</p>
+<br>
+<h2 id="use-variance-in-optics-type-parameters-771httpsgithubcomjulien-truffautmonocleissues771">Use variance in optic's type parameters <a href="https://github.com/julien-truffaut/Monocle/issues/771">#771</a></h2>
+<p>A <code>Getter[A, B]</code> is equivalent to <code>A =&gt; B</code>. So the variance of <code>Getter</code> should be the same as <code>=&gt;</code>, covariant in A,
+the input and contravariant in B, the output. If you are like me and have trouble putting your head around variance, you
+will find a great resource in <a href="https://leanpub.com/thinking-with-types">Thinking with types</a>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">Getter</span><span class="o">[</span><span class="kt">-</span><span class="kt">A</span>, <span class="kt">+</span><span class="kt">B</span><span class="o">]</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">get</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">B</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>On the other hand, a <code>Lens[A, B]</code> is equivalent to a pair of function <code>(get: A =&gt; B, set: (A, B) =&gt; A)</code>. Both A and B appear
+in covariant and contravariant positions, which means <code>Lens</code> must be invariant in A and B.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">Lens</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">Getter</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">]</span> <span class="o">{</span> 
+  <span class="c1">// A is both an input and ouput of set
+</span><span class="c1"></span>  <span class="k">def</span> <span class="n">set</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">A</span><span class="o">,</span> <span class="n">newValue</span><span class="k">:</span> <span class="kt">B</span><span class="o">)</span><span class="k">:</span> <span class="kt">A</span> 
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Similarly, all write optics are invariant, but it turns out that their polymorphic cousin is not. For example, a <code>PolyLens[A1, A2, B1, B2]</code>
+is a pair of function <code>(get: A1 =&gt; B1, set: (A1, B2) =&gt; A2)</code>. Now, both A1 and B2 are in contravariant position and A2
+and B1 are in covariant position.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">PolyLens</span><span class="o">[</span><span class="kt">-</span><span class="kt">A1</span>, <span class="kt">+</span><span class="kt">A2</span>, <span class="kt">+</span><span class="kt">B1</span>, <span class="kt">-</span><span class="kt">B2</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">Getter</span><span class="o">[</span><span class="kt">A1</span>, <span class="kt">B1</span><span class="o">]</span> <span class="o">{</span> 
+  <span class="k">def</span> <span class="n">set</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">A1</span><span class="o">,</span> <span class="n">newValue</span><span class="k">:</span> <span class="kt">B2</span><span class="o">)</span><span class="k">:</span> <span class="kt">A2</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Thank you, Adam Fraser and John De Goes for the idea. Also, thanks to Georgi Krastev for pointing out monomorphic
+<code>Lens</code> can inherit <code>Getter</code> with variance.</p>
+<p>Regrettably, polymorphic optics bring other <a href="https://github.com/julien-truffaut/Monocle/issues/770">issues</a>. So it is
+unclear if we will keep them in 3.x or if Monocle will only support monomorphic optics.</p>
+<br>
+<h2 id="0-dependency-core">0 dependency core</h2>
+<p>A project with no dependency present several advantages:</p>
+<ul>
+<li>Modularity. End-users may want a better syntax for modifying case classes without adding cats to their code base.</li>
+<li>Independent release cycle. We don't need to release a new version every time an upstream dependency is upgraded.</li>
+<li>More flexibility. We can experiment more easily with plugins and language features (e.g. Scala 3) without waiting for
+dependencies to support them.</li>
+<li>Smaller footprint. It is particularly significant for other platforms like Scala.js.</li>
+</ul>
+<p>Monocle core module only depends on a one functional library, <a href="https://scalaz.github.io/7/">scalaz</a> in 1.x, <a href="https://typelevel.org/cats/">cats</a>
+in 2.x. Monocle exposes a couple of functions using typeclasses like <code>modifyF</code>, <code>Prism.below</code>, or <code>Traversal.fromTraverse</code>. Still,
+the main reason for this dependency is the encoding of  <code>Traversal</code>.</p>
+<p>We use the Van Laarhoven encoding for <code>Traversal</code>, which means we define all functions within <code>Traversal</code> in terms of <code>modifyF</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">Traversal</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">]</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">modifyF</span><span class="o">[</span><span class="kt">F</span><span class="o">[</span><span class="k">_</span><span class="o">]</span><span class="kt">:</span> <span class="kt">Applicative</span><span class="o">]</span><span class="o">(</span><span class="n">f</span><span class="k">:</span> <span class="kt">B</span> <span class="o">=&gt;</span> <span class="n">F</span><span class="o">[</span><span class="kt">B</span><span class="o">]</span><span class="o">)</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">F</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>It is still unclear if we can find an alternative encoding of <code>Traversal</code> without a dependency on cats
+(see <a href="https://github.com/julien-truffaut/Monocle/issues/766">issue</a>). Assuming we find a suitable encoding one, we can
+then create a cats interop module where we would define all cats specific methods and instances. Unfortunately, end-users
+will need an additional import to access those functionality. We need to evaluate how often this extra import will be required.</p>
+<br>
+<h2 id="rename-all-compose-methods-to-andthen-768httpsgithubcomjulien-truffautmonocleissues768">Rename all compose methods to andThen <a href="https://github.com/julien-truffaut/Monocle/issues/768">#768</a></h2>
+<p>Optics and functions compose in the same way; you need to make the type match a bit like in a puzzle.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">compose</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="o">(</span><span class="n">f</span><span class="k">:</span> <span class="kt">B</span> <span class="o">=&gt;</span> <span class="n">C</span><span class="o">,</span> <span class="n">g</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">B</span><span class="o">)</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">C</span>
+<span class="k">def</span> <span class="n">compose</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="o">(</span><span class="n">f</span><span class="k">:</span> <span class="kt">Optic</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">]</span><span class="o">,</span> <span class="n">g</span><span class="k">:</span> <span class="kt">Optic</span><span class="o">[</span><span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="o">)</span><span class="k">:</span> <span class="kt">Optic</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">C</span><span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>You may have noticed that the parameters of optics composition are the inverse of function composition. Optics composition
+looks more like <code>andThen</code>  than <code>compose</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">andThen</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="o">(</span><span class="n">f</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">B</span><span class="o">,</span> <span class="n">g</span><span class="k">:</span> <span class="kt">B</span> <span class="o">=&gt;</span> <span class="n">C</span><span class="o">)</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">C</span>
+<span class="k">def</span> <span class="n">compose</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="o">(</span><span class="n">f</span><span class="k">:</span> <span class="kt">Optic</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">]</span><span class="o">,</span> <span class="n">g</span><span class="k">:</span> <span class="kt">Optic</span><span class="o">[</span><span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="o">)</span><span class="k">:</span> <span class="kt">Optic</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">C</span><span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Therefore, I propose to rename all the <code>compose</code> methods in optics to <code>andThen</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">andThenLens</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="o">(</span><span class="n">f</span><span class="k">:</span> <span class="kt">Lens</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">]</span><span class="o">,</span> <span class="n">g</span><span class="k">:</span> <span class="kt">Lens</span><span class="o">[</span><span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="o">)</span><span class="k">:</span> <span class="kt">Lens</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">C</span><span class="o">]</span>
+<span class="k">def</span> <span class="n">andThenPrism</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="o">(</span><span class="n">f</span><span class="k">:</span> <span class="kt">Prism</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">]</span><span class="o">,</span> <span class="n">g</span><span class="k">:</span> <span class="kt">Prism</span><span class="o">[</span><span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="o">)</span><span class="k">:</span> <span class="kt">Prism</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">C</span><span class="o">]</span>
+<span class="c1">// ...
+</span></code></pre></td></tr></table>
+</div>
+</div><p>For those curious about the abstraction behind function and optics, it is called <a href="https://github.com/typelevel/cats/blob/master/core/src/main/scala/cats/arrow/Category.scala">Category</a>.
+We can also use the &quot;standard&quot; symbolic alias for <code>andThen</code>, <code>&gt;&gt;&gt;</code> (see <a href="https://github.com/typelevel/cats/blob/master/core/src/main/scala/cats/arrow/Compose.scala">Compose</a>).</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">person</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">address</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">streetNumber</span>
+</code></pre></td></tr></table>
+</div>
+</div><br>
+<h2 id="monocle-needs-your-help">Monocle needs your help</h2>
+<p>If you would like to participate in the development of Monocle, we are always looking for new contributors and active maintainers.
+You don't need to be an expert in optics; we need more people commenting on our issue <a href="https://github.com/julien-truffaut/Monocle/issues">tracker</a>.
+We also created a label <a href="https://github.com/julien-truffaut/Monocle/issues?utf8=%E2%9C%93&amp;q=is%3Aissue+is%3Aopen+label%3A%22beginner+friendly%22+label%3A%223.x%22+">beginner-friendly</a>
+for issues suitable for beginners. I am also available to mentor you if you want to dive in the optics world,
+don't hesitate to reach out to me on <a href="https://twitter.com/JulienTruffaut">twitter</a> or <a href="https://gitter.im/julien-truffaut/">gitter</a>!</p>
+
+  </div>
+  <aside class = 'pt_1 aside'>
+    <div class = 'aside_widget'>
+      <h3 class = 'mb_1'>Tags</h3>
+<div class = 'tags'>
+  
+  <a href = '/tags/scala' class = 'tag'>scala</a>
+   
+  <a href = '/tags/monocle' class = 'tag'>monocle</a>
+   
+</div>
+
+
+      <h3 class = 'mt_1'>Learn FP in Scala</h3>
+      <p>
+        Are you interested in learning functional programming in Scala? <a href ='https://github.com/fp-tower/foundation'>Take our course Foundation</a>
+      </p>
+    </div>
+  </aside>
+</div>
+    </main>
+<footer class = 'footer'>
+  <ul class = 'wrap footer_inner'>
+    <div>
+      © 2019 Truffaut Consultancy LTD. All rights reserved
+    </div>
+    <div class  = 'social_icons'>
+    
+      <a href = 'https://github.com/julien-truffaut' target = '_blank' rel = 'noopener' title = 'follow on github' class = 'social_icon github'></a>
+    
+      <a href = 'https://www.linkedin.com/in/julientruffaut/' target = '_blank' rel = 'noopener' title = 'follow on linkedin' class = 'social_icon linkedin'></a>
+    
+      <a href = 'https://twitter.com/JulienTruffaut' target = '_blank' rel = 'noopener' title = 'follow on twitter' class = 'social_icon twitter'></a>
+    
+      <a href = 'https://www.reddit.com/user/julien-truffaut' target = '_blank' rel = 'noopener' title = 'follow on reddit' class = 'social_icon reddit'></a>
+    
+    </div>
+  </ul>
+</footer>
+
+    <script src = '/js/index.js'></script>
+
+  </body>
+</html>
