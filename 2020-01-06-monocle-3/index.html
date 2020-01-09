@@ -121,8 +121,8 @@ For those common operations, we can provide a dedicated method on all optics:</p
 </div><p>This feature should make the API more IDE friendly and reduce the learning curve for new users.</p>
 <br>
 <h2 id="use-variance-in-optics-type-parameters-771httpsgithubcomjulien-truffautmonocleissues771">Use variance in optic's type parameters <a href="https://github.com/julien-truffaut/Monocle/issues/771">#771</a></h2>
-<p>A <code>Getter[A, B]</code> is equivalent to <code>A =&gt; B</code>. So the variance of <code>Getter</code> should be the same as <code>=&gt;</code>, covariant in A,
-the input and contravariant in B, the output. If you are like me and have trouble putting your head around variance, you
+<p>A <code>Getter[A, B]</code> is equivalent to <code>A =&gt; B</code>. So the variance of <code>Getter</code> should be the same as <code>=&gt;</code>, contravariant in A,
+the input and covariant in B, the output. If you are like me and have trouble putting your head around variance, you
 will find a great resource in <a href="https://leanpub.com/thinking-with-types">Thinking with types</a>.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
