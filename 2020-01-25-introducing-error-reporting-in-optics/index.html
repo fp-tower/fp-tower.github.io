@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head><title>Introducing error reporting in optics | fp-tower blog</title>
+<meta charset='utf-8'>
+<meta name = 'viewport' content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
+<meta http-equiv = 'X-UA-Compatible' content = 'IE=edge'>
+<meta name = 'SKYPE_TOOLBAR' content = 'SKYPE_TOOLBAR_PARSER_COMPATIBLE' />
+<meta name = 'keywords' content = 'fp-tower blog'>
+<meta property = 'og:locale' content = 'en_US' />
+<meta property = 'og:type' content = 'article' />
+<meta property = 'og:title' content = 'Introducing error reporting in optics' />
+<meta property = 'og:description' content = 'A frequently requested feature is the ability to report why an optic failed. It is particularly crucial when you build a sophisticated optic. Say you …'>
+<meta property = 'og:url' content = '/2020-01-25-introducing-error-reporting-in-optics/' />
+
+<link rel=icon href="/images/apple-coach-logo-only.svg" sizes="any" type="image/svg+xml">
+<link rel="apple-touch-icon" sizes="180x180" href = '/images/icons/apple-touch-icon.png'>
+<link rel="icon" type="image/png" sizes="32x32" href = '/images/icons/favicon-32x32.png'>
+<link rel="icon" type="image/png" sizes="16x16" href= '/images/icons/favicon-16x16.png'>
+<link rel='canonical' href="/2020-01-25-introducing-error-reporting-in-optics/">
+<link rel = 'stylesheet' href = '/main.bcea90a2c934f5106e01b4779a5df482552ddd8def71872cef60a0ef773f206d213ad1ea46a152b9f72f564f83f26606b73b7136615dcf2445e783467bbd7dba.css' integrity = 'sha512-vOqQosk09RBuAbR3ml30glUt3Y3vcYcs72Cg73c/IG0hOtHqRqFSufcvVk&#43;D8mYGtztxNmFdzyRF54NGe719ug=='>
+
+  </head>
+	<body>
+<header class = 'nav_header'>
+  <div class = 'nav_top wrap'>
+    <a class = 'nav_brand' href='/'>
+      <img src = '/images/logo-white.png' class = 'nav_logo'>
+    </a>
+    <nav class = 'nav center'>
+      <a href = '/' class = 'nav_item '>
+        home
+      </a>
+    </nav>
+    <div class = 'nav_toggle'>&#9776;</div>
+  </div>
+</header>
+
+    <main>
+<div class = 'grid-reverse wrap pt_4'>
+  <div class = 'contents'>
+    <h1>Introducing error reporting in optics</h1>
+    
+<div class = 'author'>
+  <div class = 'avatar'>
+    <img src = '/images/julien-truffaut.jpg'>
+  </div>
+  <div class = 'author_intro'>
+    <h3 class = 'author_name'><a href = 'https://twitter.com/JulienTruffaut' target = '_blank' rel = 'noopener' title = 'Julien Truffaut linkedin'>julien truffaut <span class = 'tag'>follow</span></a></h3>
+    <p class = 'date'>07 Jan . 9 min read</p>
+  </div>
+</div>
+
+    <img src = '/images/error-reporting.jpg' alt = 'Introducing error reporting in optics'><p>A frequently requested feature is the ability to report why an optic failed. It is particularly crucial when you build a sophisticated optic. Say you have a large configuration document, and you want to focus on <code>kafka.topics.order-events.partitions</code>. There may not be a <code>partitions</code> key, or if it exists, it may have an unexpected format, e.g. it is a String instead of an Int. In Monocle 2.x and other optics libraries, we cannot provide any details about the failure. In this blog post, I would like to discuss my experiments with a new optics encoding that supports detailed error reporting. In particular, I will present a step-by-step refactoring of one specific type of optic such as you can see the failed attempts as well as the final solution.</p>
+<p>This article is written using <a href="https://dotty.epfl.ch/">Dotty</a> <code>0.21.0-RC1</code>. All code is available in the following GitHub <a href="https://github.com/julien-truffaut/blog-error-reporting/tree/master/src/main/scala">repository</a>.</p>
+<h2 id="overview-of-optional">Overview of Optional</h2>
+<p>An <code>Optional</code> (aka Affine Traversal) is an optics used to access a section (<code>To</code>) of a larger object (<code>From</code>).
+As the name implies, the area targeted by an <code>Optional</code> may be missing, which makes it a good use case to discuss error
+reporting. Here is the interface of an Optional.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">Optional</span><span class="o">[</span><span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span> <span class="o">{</span> 
+  <span class="k">def</span> <span class="n">getOption</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">From</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">To</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">replace</span><span class="o">(</span><span class="n">to</span><span class="k">:</span> <span class="kt">To</span><span class="o">,</span> <span class="n">from</span><span class="k">:</span> <span class="kt">From</span><span class="o">)</span><span class="k">:</span> <span class="kt">From</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Unsurprisingly, we can use an <code>Optional</code> to access an optional field in a class.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">User</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">age</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">email</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">email</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">User</span>, <span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+
+<span class="k">val</span> <span class="n">john</span> <span class="k">=</span> <span class="nc">User</span><span class="o">(</span><span class="s">&#34;John Doe&#34;</span><span class="o">,</span> <span class="mi">23</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&#34;john@foo.com&#34;</span><span class="o">)</span><span class="o">)</span>
+
+<span class="n">email</span><span class="o">.</span><span class="n">getOption</span><span class="o">(</span><span class="n">john</span><span class="o">)</span>
+<span class="c1">// res0: Option[String] = Some(john@foo.com)
+</span><span class="c1"></span><span class="n">email</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="s">&#34;john@doe.com&#34;</span><span class="o">,</span> <span class="n">john</span><span class="o">)</span>
+<span class="c1">// res1: User = User(John Doe, 23, Some(john@doe.com))
+</span></code></pre></td></tr></table>
+</div>
+</div><p>We can also build an <code>Optional</code> to target any value in a <code>Map</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">index</span><span class="o">[</span><span class="kt">K</span>, <span class="kt">V</span><span class="o">]</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">K</span><span class="o">)</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">Map</span><span class="o">[</span><span class="kt">K</span>, <span class="kt">V</span><span class="o">]</span>, <span class="kt">V</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+
+<span class="k">val</span> <span class="n">users</span><span class="k">:</span> <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">&#34;john&#34;</span> <span class="o">-&gt;</span> <span class="mi">23</span><span class="o">,</span> <span class="s">&#34;marie&#34;</span> <span class="o">-&gt;</span> <span class="mi">34</span><span class="o">)</span>
+
+<span class="n">index</span><span class="o">(</span><span class="s">&#34;john&#34;</span><span class="o">)</span><span class="o">.</span><span class="n">getOption</span><span class="o">(</span><span class="n">users</span><span class="o">)</span>
+<span class="c1">// res2: Option[Int] = Some(23)
+</span><span class="c1"></span><span class="n">index</span><span class="o">(</span><span class="s">&#34;bob&#34;</span><span class="o">)</span><span class="o">.</span><span class="n">getOption</span><span class="o">(</span><span class="n">users</span><span class="o">)</span> 
+<span class="c1">// res3: Option[Int] = None
+</span><span class="c1"></span><span class="n">index</span><span class="o">(</span><span class="s">&#34;john&#34;</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">20</span><span class="o">,</span> <span class="n">users</span><span class="o">)</span>
+<span class="c1">// res4: Map[String, Int] = Map(john -&gt; 20, marie -&gt; 34)
+</span></code></pre></td></tr></table>
+</div>
+</div><p>The interface follow three rules which ensure that if an <code>Optional</code> gives access to some value, then you can only modify this particular
+section and nothing else. These following rules are generally checked using property based testing:</p>
+<ol>
+<li>if <code>getOption(from) == None</code>, then <code>replace(x, from) == from</code>.</li>
+<li>if <code>getOption(from) == Some(x)</code>, then <code>replace(x, from) == from</code> .</li>
+<li>if <code>getOption(from) == Some(x)</code>, then <code>getOption(replace(y, from)) == Some(y)</code> .</li>
+</ol>
+<p>Perhaps surprisingly, an <code>Optional</code> does not let you insert data. You can only change values that already exist, as this example shows.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">index</span><span class="o">(</span><span class="s">&#34;bob&#34;</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">45</span><span class="o">,</span> <span class="n">users</span><span class="o">)</span>
+<span class="c1">// res5: Map[String, Int] = Map(john -&gt; 23, marie -&gt; 34)
+</span></code></pre></td></tr></table>
+</div>
+</div><p><code>Optional</code> offers a rich API with more than a dozen useful combinators. Most importantly, <code>Optional</code> composes with other
+<code>Optional</code> (as well as with other optics) such as you can easily access nested data structure.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">Optional</span><span class="o">[</span><span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span> <span class="o">{</span> <span class="n">self</span> <span class="k">=&gt;</span>
+  <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+  <span class="k">def</span> <span class="o">&gt;&gt;&gt;</span><span class="o">[</span><span class="kt">Next</span><span class="o">]</span><span class="o">(</span><span class="n">other</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">To</span>, <span class="kt">Next</span><span class="o">]</span><span class="o">)</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">From</span>, <span class="kt">Next</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">users</span><span class="k">:</span> <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">User</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span>
+  <span class="s">&#34;john&#34;</span>  <span class="o">-&gt;</span> <span class="nc">User</span><span class="o">(</span><span class="s">&#34;John Doe&#34;</span>  <span class="o">,</span> <span class="mi">23</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&#34;john@foo.com&#34;</span><span class="o">)</span><span class="o">)</span><span class="o">,</span>
+  <span class="s">&#34;marie&#34;</span> <span class="o">-&gt;</span> <span class="nc">User</span><span class="o">(</span><span class="s">&#34;Marie Acme&#34;</span><span class="o">,</span> <span class="mi">34</span><span class="o">,</span> <span class="nc">None</span><span class="o">)</span>
+<span class="o">)</span>
+
+<span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="s">&#34;john&#34;</span> <span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">email</span><span class="o">)</span><span class="o">.</span><span class="n">getOption</span><span class="o">(</span><span class="n">users</span><span class="o">)</span>
+<span class="c1">// res10: Option[String] = Some(john@foo.com)
+</span><span class="c1"></span><span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="s">&#34;marie&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">email</span><span class="o">)</span><span class="o">.</span><span class="n">getOption</span><span class="o">(</span><span class="n">users</span><span class="o">)</span>
+<span class="c1">// res11: Option[String] = None
+</span><span class="c1"></span><span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="s">&#34;bob&#34;</span>  <span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">email</span><span class="o">)</span><span class="o">.</span><span class="n">getOption</span><span class="o">(</span><span class="n">users</span><span class="o">)</span> 
+<span class="c1">// res12: Option[String] = None
+</span><span class="c1"></span>
+<span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="s">&#34;john&#34;</span> <span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">email</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="s">&#34;john@doe.com&#34;</span><span class="o">,</span> <span class="n">users</span><span class="o">)</span> 
+<span class="c1">// res13: Map[String, User] = Map(
+</span><span class="c1"></span><span class="c1">//   &#34;john&#34;  -&gt; User(John Doe  , 23, Some(john@doe.com)),
+</span><span class="c1"></span><span class="c1">//   &#34;marie&#34; -&gt; User(Marie Acme, 34, None)
+</span><span class="c1"></span><span class="c1">// )
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Here is the main problem. Both <code>index(&quot;marie&quot;) &gt;&gt;&gt; email</code> and <code>index(&quot;bob&quot;) &gt;&gt;&gt; email</code> fail with <code>users</code>. The former
+because Marie doesn't have an email and the latter because Bob is not a valid user. Sadly, we have no way to distinguish
+these two cases.</p>
+<p>The issue is that <code>Optional</code> returns an <code>Option</code> which doesn't provide any details when it fails. If we want to report
+a precise error message, we need to use something like <code>Either</code>. The question is then, what should be the type of the error
+message? Let's start with something simple like <code>String</code> and see how far we can go.</p>
+<h2 id="optional-with-string-error">Optional with String error</h2>
+<p>We only need to change the signature of <code>getOption</code> to return an <code>Either[String, From]</code>. Let's also use that occasion to rename
+this method to <code>getOrError</code>. We should probably rename <code>Optional</code> too but I don't have a better idea for now.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">Optional</span><span class="o">[</span><span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span> <span class="o">{</span> 
+  <span class="k">def</span> <span class="n">getOrError</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">From</span><span class="o">)</span><span class="k">:</span> <span class="kt">Either</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">To</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">replace</span><span class="o">(</span><span class="n">to</span><span class="k">:</span> <span class="kt">To</span><span class="o">,</span> <span class="n">from</span><span class="k">:</span> <span class="kt">From</span><span class="o">)</span><span class="k">:</span> <span class="kt">From</span>
+  
+  <span class="k">def</span> <span class="o">&gt;&gt;&gt;</span><span class="o">[</span><span class="kt">Next</span><span class="o">]</span><span class="o">(</span><span class="n">other</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">To</span>, <span class="kt">Next</span><span class="o">]</span><span class="o">)</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">From</span>, <span class="kt">Next</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">email</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Optional</span><span class="o">[</span><span class="kt">User</span>, <span class="kt">String</span><span class="o">]</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">getOrError</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">User</span><span class="o">)</span><span class="k">:</span> <span class="kt">Either</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">String</span><span class="o">]</span> <span class="k">=</span>
+    <span class="n">from</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">toRight</span><span class="o">(</span><span class="s">&#34;email is missing&#34;</span><span class="o">)</span>
+
+  <span class="k">def</span> <span class="n">replace</span><span class="o">(</span><span class="n">to</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">from</span><span class="k">:</span> <span class="kt">User</span><span class="o">)</span><span class="k">:</span> <span class="kt">User</span> <span class="o">=</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">from</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">isDefined</span><span class="o">)</span> <span class="n">from</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">email</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="n">to</span><span class="o">)</span><span class="o">)</span> <span class="k">else</span> <span class="n">from</span>
+<span class="o">}</span>
+
+<span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="s">&#34;john&#34;</span> <span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">email</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="n">users</span><span class="o">)</span>
+<span class="c1">// res14: Either[String, String] = Right(john@foo.com)
+</span><span class="c1"></span><span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="s">&#34;marie&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">email</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="n">users</span><span class="o">)</span>
+<span class="c1">// res15: Either[String, String] = Left(email is missing)
+</span><span class="c1"></span><span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="s">&#34;bob&#34;</span>  <span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">email</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="n">users</span><span class="o">)</span>
+<span class="c1">// res16: Either[String, String] = Left(Key bob is missing)
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Yeah! That wasn't so difficult. We can even define <code>getOption</code> in terms of <code>getOrError</code> for backward compatibility.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">Optional</span><span class="o">[</span><span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span> <span class="o">{</span> 
+  <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+  <span class="k">def</span> <span class="n">getOption</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">From</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">To</span><span class="o">]</span> <span class="k">=</span>
+    <span class="n">getOrError</span><span class="o">(</span><span class="n">from</span><span class="o">)</span><span class="o">.</span><span class="n">toOption</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>We could stop here but having the error type hardcoded to String is a little bit unsatisfying. What if someone wanted to build
+a DSL to manipulate JSON or YAML ala <a href="https://github.com/circe/circe-optics/blob/956ec1208f45c7e9a7538f56ed99cce97bb5367a/optics/src/test/scala/io/circe/optics/JsonPathSuite.scala#L33">JsonPath</a>
+from <a href="https://circe.github.io/circe/">Circe</a>. In that case, we may want to return a path from the root element as well as
+an error message.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="s">&#34;users&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">index</span><span class="o">(</span><span class="s">&#34;john&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">index</span><span class="o">(</span><span class="s">&#34;age&#34;</span><span class="o">)</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="n">users</span><span class="o">)</span>
+<span class="c1">// res17: Either[(Path, String), String] = 
+</span><span class="c1"></span><span class="c1">//   Left((users.john, &#34;missing field age&#34;))
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="optional-with-custom-error">Optional with custom error</h2>
+<p>If we want the error type to be fully customisable by users, it needs to be a type parameter of <code>Optional</code>, e.g.
+<code>Optional[String, User, Email]</code> or <code>Optional[CustomError, User, Email]</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">Optional</span><span class="o">[</span><span class="kt">Error</span>, <span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span>  <span class="o">{</span> 
+  <span class="k">def</span> <span class="n">getOrError</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">From</span><span class="o">)</span><span class="k">:</span> <span class="kt">Either</span><span class="o">[</span><span class="kt">Error</span>, <span class="kt">To</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">replace</span><span class="o">(</span><span class="n">to</span><span class="k">:</span> <span class="kt">To</span><span class="o">,</span> <span class="n">from</span><span class="k">:</span> <span class="kt">From</span><span class="o">)</span><span class="k">:</span> <span class="kt">From</span>
+ 
+  <span class="k">def</span> <span class="o">&gt;&gt;&gt;</span><span class="o">[</span><span class="kt">Next</span><span class="o">]</span><span class="o">(</span><span class="n">other</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">Error</span>, <span class="kt">To</span>, <span class="kt">Next</span><span class="o">]</span><span class="o">)</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">Error</span>, <span class="kt">From</span>, <span class="kt">Next</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Now, let's define a simple configuration language with three types of values: <code>Int</code>, <code>String</code> or <code>Object</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">enum</span> <span class="nc">Config</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">IntConfig</span><span class="o">(</span><span class="n">value</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span>
+  <span class="k">case</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="n">value</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+  <span class="k">case</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="n">value</span><span class="k">:</span> <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Config</span><span class="o">]</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">config</span><span class="k">:</span> <span class="kt">Config</span> <span class="o">=</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
+  <span class="s">&#34;john&#34;</span>  <span class="o">-&gt;</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
+    <span class="s">&#34;name&#34;</span>  <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;John Doe&#34;</span><span class="o">)</span><span class="o">,</span>
+    <span class="s">&#34;age&#34;</span>   <span class="o">-&gt;</span> <span class="nc">IntConfig</span><span class="o">(</span><span class="mi">23</span><span class="o">)</span>
+  <span class="o">)</span><span class="o">)</span><span class="o">,</span>
+  <span class="s">&#34;marie&#34;</span> <span class="o">-&gt;</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
+    <span class="s">&#34;name&#34;</span>  <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;Marie Acme&#34;</span><span class="o">)</span><span class="o">,</span>
+    <span class="s">&#34;age&#34;</span>   <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;forty-three&#34;</span><span class="o">)</span>
+  <span class="o">)</span><span class="o">)</span>
+<span class="o">)</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>When we access a <code>Config</code>, we can experience two kinds of failure. Either the data is missing, or it is an unexpected
+format, e.g. we want an <code>Int</code>, but it is a <code>String</code>. Let's also use an enum to encode that.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">enum</span> <span class="nc">ConfigFailure</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">MissingKey</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+  <span class="k">case</span> <span class="nc">InvalidFormat</span><span class="o">(</span><span class="n">expectedFormat</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">actual</span><span class="k">:</span> <span class="kt">Config</span><span class="o">)</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Now, we can define a few <code>Optionals</code> that parse a generic <code>Config</code> into each data type: <code>Int</code>, <code>String</code>, or <code>Object</code>.
+These <code>Optionals</code> can only fail because the config type is incorrect, so let's use a precise <code>InvalidFormat</code> error.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">int</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">InvalidFormat</span>, <span class="kt">Config</span>, <span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+<span class="k">val</span> <span class="n">str</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">InvalidFormat</span>, <span class="kt">Config</span>, <span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+<span class="k">val</span> <span class="n">obj</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">InvalidFormat</span>, <span class="kt">Config</span>, <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Config</span><span class="o">]</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+
+<span class="n">int</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="nc">IntConfig</span><span class="o">(</span><span class="mi">12</span><span class="o">)</span><span class="o">)</span>
+<span class="c1">// res18: Either[InvalidFormat, Int] = Right(12)
+</span><span class="c1"></span>
+<span class="n">int</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;hello&#34;</span><span class="o">)</span><span class="o">)</span>
+<span class="c1">// res19: Either[InvalidFormat, Int] = 
+</span><span class="c1"></span><span class="c1">//   Left(InvalidFormat(Int,StringConfig(hello)))
+</span></code></pre></td></tr></table>
+</div>
+</div><p>If you are familiar with optics, you may have noticed that <code>int</code>, <code>str</code> and <code>obj</code> could be a <code>Prism</code>. Next step, we can
+adapt <code>index</code> to return a <code>MissingKey</code> error.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">index</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">MissingKey</span>, <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">A</span><span class="o">]</span>, <span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+
+<span class="n">index</span><span class="o">(</span><span class="s">&#34;users&#34;</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span>
+<span class="c1">// res20: Either[MissingKey, Int] = Left(MissingKey(users))
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Finally, let's combine <code>obj</code> and <code>index</code> such as we can, at the same time, convert an arbitrary <code>Config</code> into a<code> Map</code> and focus
+into a key. The error type should be ConfigFailure because it can fail for the two reasons.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">property</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">ConfigFailure</span>, <span class="kt">Config</span>, <span class="kt">Config</span><span class="o">]</span> <span class="k">=</span>
+  <span class="n">obj</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">index</span><span class="o">(</span><span class="n">key</span><span class="o">)</span>
+
+<span class="o">[</span><span class="kt">ERROR</span><span class="o">]</span> <span class="nc">Type</span> <span class="nc">Mismatch</span> <span class="nc">Error</span><span class="k">:</span>
+    <span class="kt">obj</span> <span class="kt">&gt;&gt;&gt;</span> <span class="kt">index</span><span class="o">(</span><span class="kt">key</span><span class="o">)</span>
+            <span class="kt">^^^^^^^^^^^^</span>
+<span class="nc">Found</span><span class="k">:</span>    <span class="kt">Optional</span><span class="o">[</span><span class="kt">MissingKey</span>   , <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Nothing</span><span class="o">]</span>, <span class="kt">Nothing</span><span class="o">]</span>
+<span class="nc">Required</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">InvalidFormat</span>, <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Config</span><span class="o">]</span> , <span class="kt">Next</span><span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Regrettably, the compiler tells us we cannot compose these two optics because they have different failure types. <code>MissingKey</code>
+and <code>InvalidFormat</code> are both <code>ConfigFailure</code>, but <code>&gt;&gt;&gt;</code> is too strict. It requires both sides of <code>&gt;&gt;&gt;</code> to have precisely the same error.
+There are two solutions to this problem:</p>
+<ol>
+<li>We update the definition of <code>obj</code> and <code>index</code> to use <code>ConfigFailure</code> instead of a more specialised error.</li>
+<li>We make <code>Optional</code> error type covariant as it only appears in return type.</li>
+</ol>
+<p>The first solution is more straightforward, but we will most likely run in the same problem later. So I propose to use the second option.</p>
+<h2 id="optional-with-covariant-error">Optional with covariant error</h2>
+<p>Variance is quite tricky to grasp. Fortunately, the compiler is here to help us. If we ever get a variance error, the compiler
+will let us know and usually propose an alternative approach.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">Optional</span><span class="o">[</span><span class="kt">+</span><span class="kt">Error</span>, <span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">getOrError</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">From</span><span class="o">)</span><span class="k">:</span> <span class="kt">Either</span><span class="o">[</span><span class="kt">Error</span>, <span class="kt">To</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">replace</span><span class="o">(</span><span class="n">to</span><span class="k">:</span> <span class="kt">To</span><span class="o">,</span> <span class="n">from</span><span class="k">:</span> <span class="kt">From</span><span class="o">)</span><span class="k">:</span> <span class="kt">From</span>
+
+  <span class="k">def</span> <span class="o">&gt;&gt;&gt;</span><span class="o">[</span><span class="kt">NewError</span> <span class="k">&gt;:</span> <span class="kt">Error</span>, <span class="kt">Next</span><span class="o">]</span><span class="o">(</span>
+    <span class="n">other</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">NewError</span>, <span class="kt">To</span>, <span class="kt">Next</span><span class="o">]</span>
+  <span class="o">)</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">NewError</span>, <span class="kt">From</span>, <span class="kt">Next</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>We can redefine the same <code>Optional</code> exactly in the same way, but this time <code>property</code> compiles! Let's try with a more complex
+example.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">property</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">ConfigFailure</span>, <span class="kt">Config</span>, <span class="kt">Config</span><span class="o">]</span> <span class="k">=</span>
+  <span class="n">obj</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">index</span><span class="o">(</span><span class="n">key</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">config</span><span class="k">:</span> <span class="kt">Config</span> <span class="o">=</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
+  <span class="s">&#34;john&#34;</span>  <span class="o">-&gt;</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
+    <span class="s">&#34;name&#34;</span>  <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;John Doe&#34;</span><span class="o">)</span><span class="o">,</span>
+    <span class="s">&#34;age&#34;</span>   <span class="o">-&gt;</span> <span class="nc">IntConfig</span><span class="o">(</span><span class="mi">23</span><span class="o">)</span>
+  <span class="o">)</span><span class="o">)</span><span class="o">,</span>
+  <span class="s">&#34;marie&#34;</span> <span class="o">-&gt;</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
+    <span class="s">&#34;name&#34;</span>  <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;Marie Acme&#34;</span><span class="o">)</span><span class="o">,</span>
+    <span class="s">&#34;age&#34;</span>   <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;forty-three&#34;</span><span class="o">)</span>
+  <span class="o">)</span><span class="o">)</span>
+<span class="o">)</span><span class="o">)</span>
+
+<span class="o">(</span><span class="n">property</span><span class="o">(</span><span class="s">&#34;john&#34;</span> <span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;age&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">int</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="n">config</span><span class="o">)</span>
+<span class="c1">// res21: Either[MissingKey, Int] = Right(23)
+</span><span class="c1"></span><span class="o">(</span><span class="n">property</span><span class="o">(</span><span class="s">&#34;marie&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;age&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">int</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="n">config</span><span class="o">)</span>
+<span class="c1">// res22: Either[MissingKey, Int] = 
+</span><span class="c1"></span><span class="c1">//   Left(InvalidFormat(Int,StringConfig(forty-three)))
+</span><span class="c1"></span><span class="o">(</span><span class="n">property</span><span class="o">(</span><span class="s">&#34;bob&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;age&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">int</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="n">config</span><span class="o">)</span>
+<span class="c1">// res23: Either[MissingKey, Int] = Left(MissingKey(bob))
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Perfect. Type inference works, and we get a precise error. Since we are building an <code>Optional</code>, we can read and modify
+an arbitrary <code>Config</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="o">(</span><span class="n">property</span><span class="o">(</span><span class="s">&#34;john&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;age&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">int</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">10</span><span class="o">,</span> <span class="n">config</span><span class="o">)</span>
+<span class="c1">// res24: Config = ObjectConfig(Map(
+</span><span class="c1"></span><span class="c1">//  &#34;john&#34;  -&gt; ObjectConfig(Map(
+</span><span class="c1"></span><span class="c1">//    &#34;name&#34;  -&gt; StringConfig(&#34;John Doe&#34;),
+</span><span class="c1"></span><span class="c1">//    &#34;age&#34;   -&gt; IntConfig(10)
+</span><span class="c1"></span><span class="c1">//  )),
+</span><span class="c1"></span><span class="c1">//  &#34;marie&#34; -&gt; ObjectConfig(Map(
+</span><span class="c1"></span><span class="c1">//    &#34;name&#34;  -&gt; StringConfig(&#34;Marie Acme&#34;),
+</span><span class="c1"></span><span class="c1">//    &#34;age&#34;   -&gt; StringConfig(&#34;forty-three&#34;)
+</span><span class="c1"></span><span class="c1">//  ))
+</span><span class="c1"></span><span class="c1">//))
+</span></code></pre></td></tr></table>
+</div>
+</div>
+  </div>
+  <aside class = 'pt_1 aside'>
+    <div class = 'aside_widget'>
+      <h3 class = 'mb_1'>Tags</h3>
+<div class = 'tags'>
+  
+  <a href = '/tags/scala' class = 'tag'>scala</a>
+   
+  <a href = '/tags/monocle' class = 'tag'>monocle</a>
+   
+</div>
+
+
+      
+      
+      <section class = 'course'>
+        <h3>Learn FP in Scala</h3>
+        <p><p>Are you interested in learning functional programming in Scala? <a href="https://github.com/fp-tower/foundation">Take our course</a></p>
+<p><a href="https://github.com/fp-tower/foundation"><img src="/images/foundation.png" alt="Foundation Course Logo"></a></p>
+</p>
+      </section>
+    </div>
+  </aside>
+</div>
+    </main>
+<footer class = 'footer'>
+  <ul class = 'wrap footer_inner'>
+    <div>
+      © 2019 Truffaut Consultancy LTD. All rights reserved
+    </div>
+    <div class  = 'social_icons'>
+    
+      <a href = 'https://github.com/julien-truffaut' target = '_blank' rel = 'noopener' title = 'follow on github' class = 'social_icon github'></a>
+    
+      <a href = 'https://www.linkedin.com/in/julientruffaut/' target = '_blank' rel = 'noopener' title = 'follow on linkedin' class = 'social_icon linkedin'></a>
+    
+      <a href = 'https://twitter.com/JulienTruffaut' target = '_blank' rel = 'noopener' title = 'follow on twitter' class = 'social_icon twitter'></a>
+    
+      <a href = 'https://www.reddit.com/user/julien-truffaut' target = '_blank' rel = 'noopener' title = 'follow on reddit' class = 'social_icon reddit'></a>
+    
+    </div>
+  </ul>
+</footer>
+
+    <script src = '/js/index.js'></script>
+
+  </body>
+</html>
