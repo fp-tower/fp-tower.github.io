@@ -46,16 +46,22 @@
   </div>
   <div class = 'author_intro'>
     <h3 class = 'author_name'><a href = 'https://twitter.com/JulienTruffaut' target = '_blank' rel = 'noopener' title = 'Julien Truffaut linkedin'>julien truffaut <span class = 'tag'>follow</span></a></h3>
-    <p class = 'date'>07 Jan . 9 min read</p>
+    <p class = 'date'>07 Jan . 11 min read</p>
   </div>
 </div>
 
-    <img src = '/images/error-reporting.jpg' alt = 'Introducing error reporting in optics'><p>A frequently requested feature is the ability to report why an optic failed. It is particularly crucial when you build a sophisticated optic. Say you have a large configuration document, and you want to focus on <code>kafka.topics.order-events.partitions</code>. There may not be a <code>partitions</code> key, or if it exists, it may have an unexpected format, e.g. it is a String instead of an Int. In Monocle 2.x and other optics libraries, we cannot provide any details about the failure. In this blog post, I would like to discuss my experiments with a new optics encoding that supports detailed error reporting. In particular, I will present a step-by-step refactoring of one specific type of optic such as you can see the failed attempts as well as the final solution.</p>
-<p>This article is written using <a href="https://dotty.epfl.ch/">Dotty</a> <code>0.21.0-RC1</code>. All code is available in the following GitHub <a href="https://github.com/julien-truffaut/blog-error-reporting/tree/master/src/main/scala">repository</a>.</p>
+    <img src = '/images/error-reporting.jpg' alt = 'Introducing error reporting in optics'><p>A frequently requested feature is the ability to report why an optic failed. It is particularly crucial when you build a
+sophisticated optic. Say you have a large configuration document, and you want to focus on <code>kafka.topics.order-events.partitions</code>.
+There may not be a <code>partitions</code> key, or if it exists, it may have an unexpected format, e.g. it is a String instead of an Int.
+In <a href="https://julien-truffaut.github.io/Monocle/">Monocle</a> and other optics libraries, we cannot provide any details about
+the failure. In this blog post, I will discuss my experiments with a new optics encoding that supports detailed error reporting.
+In particular, I will present a step-by-step refactoring of one specific type of optic such as you can see the intermediate
+attempts as well as the final solution.</p>
+<p>This article is written using <a href="https://dotty.epfl.ch/">Dotty</a> <code>0.21.0-RC1</code>. All code is available in the following GitHub
+<a href="https://github.com/julien-truffaut/blog-error-reporting/tree/master/src/main/scala/optics">repository</a>.</p>
 <h2 id="overview-of-optional">Overview of Optional</h2>
 <p>An <code>Optional</code> (aka Affine Traversal) is an optics used to access a section (<code>To</code>) of a larger object (<code>From</code>).
-As the name implies, the area targeted by an <code>Optional</code> may be missing, which makes it a good use case to discuss error
-reporting. Here is the interface of an Optional.</p>
+As the name implies, the area targeted by an <code>Optional</code> may be missing. Here is the interface of an Optional.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -124,12 +130,12 @@ reporting. Here is the interface of an Optional.</p>
 <span class="c1">// res4: Map[String, Int] = Map(john -&gt; 20, marie -&gt; 34)
 </span></code></pre></td></tr></table>
 </div>
-</div><p>The interface follow three rules which ensure that if an <code>Optional</code> gives access to some value, then you can only modify this particular
-section and nothing else. These following rules are generally checked using property based testing:</p>
+</div><p>The interface follow three rules which ensure if an <code>Optional</code> successfully gives access to some value, then you can only
+modify this particular section and nothing else. These rules are generally checked using property based testing:</p>
 <ol>
-<li>if <code>getOption(from) == None</code>, then <code>replace(x, from) == from</code>.</li>
 <li>if <code>getOption(from) == Some(x)</code>, then <code>replace(x, from) == from</code> .</li>
 <li>if <code>getOption(from) == Some(x)</code>, then <code>getOption(replace(y, from)) == Some(y)</code> .</li>
+<li>if <code>getOption(from) == None</code>, then <code>replace(x, from) == from</code>.</li>
 </ol>
 <p>Perhaps surprisingly, an <code>Optional</code> does not let you insert data. You can only change values that already exist, as this example shows.</p>
 <div class="highlight"><div class="chroma">
@@ -142,8 +148,8 @@ section and nothing else. These following rules are generally checked using prop
 <span class="c1">// res5: Map[String, Int] = Map(john -&gt; 23, marie -&gt; 34)
 </span></code></pre></td></tr></table>
 </div>
-</div><p><code>Optional</code> offers a rich API with more than a dozen useful combinators. Most importantly, <code>Optional</code> composes with other
-<code>Optional</code> (as well as with other optics) such as you can easily access nested data structure.</p>
+</div><p><code>Optional</code> offers a rich API with more than a dozen useful combinators, but most importantly, <code>Optional</code> composes with other
+<code>Optional</code> such as you can easily access nested data structure.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -194,15 +200,15 @@ section and nothing else. These following rules are generally checked using prop
 </span><span class="c1"></span><span class="c1">// )
 </span></code></pre></td></tr></table>
 </div>
-</div><p>Here is the main problem. Both <code>index(&quot;marie&quot;) &gt;&gt;&gt; email</code> and <code>index(&quot;bob&quot;) &gt;&gt;&gt; email</code> fail with <code>users</code>. The former
+</div><p>Here is the core of the problem. Both <code>index(&quot;marie&quot;) &gt;&gt;&gt; email</code> and <code>index(&quot;bob&quot;) &gt;&gt;&gt; email</code> fail with <code>users</code>. The former
 because Marie doesn't have an email and the latter because Bob is not a valid user. Sadly, we have no way to distinguish
 these two cases.</p>
-<p>The issue is that <code>Optional</code> returns an <code>Option</code> which doesn't provide any details when it fails. If we want to report
+<p>The issue is that <code>Optional</code> returns an <code>Option</code> which does not provide any details when it fails. If we want to report
 a precise error message, we need to use something like <code>Either</code>. The question is then, what should be the type of the error
 message? Let's start with something simple like <code>String</code> and see how far we can go.</p>
 <h2 id="optional-with-string-error">Optional with String error</h2>
 <p>We only need to change the signature of <code>getOption</code> to return an <code>Either[String, From]</code>. Let's also use that occasion to rename
-this method to <code>getOrError</code>. We should probably rename <code>Optional</code> too but I don't have a better idea for now.</p>
+this method <code>getOrError</code>. We should probably rename <code>Optional</code> too, but I don't have a better idea at the moment.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -251,25 +257,8 @@ this method to <code>getOrError</code>. We should probably rename <code>Optional
 <span class="c1">// res16: Either[String, String] = Left(Key bob is missing)
 </span></code></pre></td></tr></table>
 </div>
-</div><p>Yeah! That wasn't so difficult. We can even define <code>getOption</code> in terms of <code>getOrError</code> for backward compatibility.</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">Optional</span><span class="o">[</span><span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span> <span class="o">{</span> 
-  <span class="o">.</span><span class="o">.</span><span class="o">.</span>
-  <span class="k">def</span> <span class="n">getOption</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">From</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">To</span><span class="o">]</span> <span class="k">=</span>
-    <span class="n">getOrError</span><span class="o">(</span><span class="n">from</span><span class="o">)</span><span class="o">.</span><span class="n">toOption</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>We could stop here but having the error type hardcoded to String is a little bit unsatisfying. What if someone wanted to build
-a DSL to manipulate JSON or YAML ala <a href="https://github.com/circe/circe-optics/blob/956ec1208f45c7e9a7538f56ed99cce97bb5367a/optics/src/test/scala/io/circe/optics/JsonPathSuite.scala#L33">JsonPath</a>
+</div><p>Yeah! That wasn't too difficult. We could stop here but having the error type hardcoded to String is a bit unsatisfying.
+What if someone wanted to build a DSL to manipulate JSON or YAML ala <a href="https://github.com/circe/circe-optics/blob/956ec1208f45c7e9a7538f56ed99cce97bb5367a/optics/src/test/scala/io/circe/optics/JsonPathSuite.scala#L33">JsonPath</a>
 from <a href="https://circe.github.io/circe/">Circe</a>. In that case, we may want to return a path from the root element as well as
 an error message.</p>
 <div class="highlight"><div class="chroma">
@@ -285,8 +274,8 @@ an error message.</p>
 </span></code></pre></td></tr></table>
 </div>
 </div><h2 id="optional-with-custom-error">Optional with custom error</h2>
-<p>If we want the error type to be fully customisable by users, it needs to be a type parameter of <code>Optional</code>, e.g.
-<code>Optional[String, User, Email]</code> or <code>Optional[CustomError, User, Email]</code>.</p>
+<p>If we want the error type to be fully customisable by the users, it needs to be a type parameter of <code>Optional</code>, e.g.
+<code>Optional[CustomError, User, Email]</code>.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -305,7 +294,7 @@ an error message.</p>
 <span class="o">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>Now, let's define a simple configuration language with three types of values: <code>Int</code>, <code>String</code> or <code>Object</code>.</p>
+</div><p>Now, let's define a simple configuration language with three types of values: <code>Int</code>, <code>String</code> and <code>Object</code>.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -345,7 +334,7 @@ an error message.</p>
 </code></pre></td></tr></table>
 </div>
 </div><p>When we access a <code>Config</code>, we can experience two kinds of failure. Either the data is missing, or it is an unexpected
-format, e.g. we want an <code>Int</code>, but it is a <code>String</code>. Let's also use an enum to encode that.</p>
+format, e.g. we want an <code>Int</code>, but it is a <code>String</code>. Let's also use an enumeration to encode errors.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -388,8 +377,9 @@ These <code>Optionals</code> can only fail because the config type is incorrect,
 </span><span class="c1"></span><span class="c1">//   Left(InvalidFormat(Int,StringConfig(hello)))
 </span></code></pre></td></tr></table>
 </div>
-</div><p>If you are familiar with optics, you may have noticed that <code>int</code>, <code>str</code> and <code>obj</code> could be a <code>Prism</code>. Next step, we can
-adapt <code>index</code> to return a <code>MissingKey</code> error.</p>
+</div><p>If you are familiar with optics hierarchy, you may have noticed that <code>int</code>, <code>str</code> and <code>obj</code> could be a <code>Prism</code>, a more
+specific optics. However, <code>Optional</code> works fine too, so let's keep things simple.
+Next step, we can adapt <code>index</code> to return a <code>MissingKey</code> error.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -400,12 +390,22 @@ adapt <code>index</code> to return a <code>MissingKey</code> error.</p>
 <td class="lntd">
 <pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">index</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">MissingKey</span>, <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">A</span><span class="o">]</span>, <span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
 
-<span class="n">index</span><span class="o">(</span><span class="s">&#34;users&#34;</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span>
-<span class="c1">// res20: Either[MissingKey, Int] = Left(MissingKey(users))
+<span class="n">index</span><span class="o">(</span><span class="s">&#34;bob&#34;</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span>
+<span class="c1">// res20: Either[MissingKey, Int] = Left(MissingKey(bob))
 </span></code></pre></td></tr></table>
 </div>
-</div><p>Finally, let's combine <code>obj</code> and <code>index</code> such as we can, at the same time, convert an arbitrary <code>Config</code> into a<code> Map</code> and focus
-into a key. The error type should be ConfigFailure because it can fail for the two reasons.</p>
+</div><p>Finally, let's combine <code>obj</code> and <code>index</code> into a <code>property</code> optics such as we can have a friendly syntax to access nested
+<code>Config</code> objects.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">property</span><span class="o">(</span><span class="s">&#34;john&#34;</span> <span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;age&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">int</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>Property</code> checks if a <code>Config</code> is an <code>Object</code>, and then it focuses into a key of the <code>Map</code>. The error type of <code>property</code>
+should be a <code>ConfigFailure</code> because it can fail for either reasons.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -428,17 +428,20 @@ into a key. The error type should be ConfigFailure because it can fail for the t
 <span class="nc">Required</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">InvalidFormat</span>, <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Config</span><span class="o">]</span> , <span class="kt">Next</span><span class="o">]</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>Regrettably, the compiler tells us we cannot compose these two optics because they have different failure types. <code>MissingKey</code>
-and <code>InvalidFormat</code> are both <code>ConfigFailure</code>, but <code>&gt;&gt;&gt;</code> is too strict. It requires both sides of <code>&gt;&gt;&gt;</code> to have precisely the same error.
+</div><p>Regrettably, the compiler rejects composing <code>obj</code> and <code>index</code> together because they have different failure types. <code>MissingKey</code>
+and <code>InvalidFormat</code> are both <code>ConfigFailure</code>, but <code>&gt;&gt;&gt;</code> is too strict. It requires both sides of <code>&gt;&gt;&gt;</code> to have exactly the same error.
 There are two solutions to this problem:</p>
 <ol>
 <li>We update the definition of <code>obj</code> and <code>index</code> to use <code>ConfigFailure</code> instead of a more specialised error.</li>
-<li>We make <code>Optional</code> error type covariant as it only appears in return type.</li>
+<li>We use variance on the error type of <code>Optional</code>.</li>
 </ol>
-<p>The first solution is more straightforward, but we will most likely run in the same problem later. So I propose to use the second option.</p>
+<p>Historically, in the functional programming side of Scala, variance had a lousy reputation. However, libraries like <a href="https://fs2.io/">fs2</a>
+or <a href="https://zio.dev/">ZIO</a> recently demonstrated variance offers a great user experience in terms of <a href="https://mpilquist.github.io/blog/2018/07/04/fs2/">type inference</a>.
+The implementation is slightly more complicated, but it is completely acceptable if end-users enjoy a better experience.</p>
 <h2 id="optional-with-covariant-error">Optional with covariant error</h2>
-<p>Variance is quite tricky to grasp. Fortunately, the compiler is here to help us. If we ever get a variance error, the compiler
-will let us know and usually propose an alternative approach.</p>
+<p>Variance is quite tricky to grasp. Fortunately, the compiler is here to help us. If we ever use the wrong variance annotation,
+the compiler will let us know and usually give us some useful suggestions. In our case, <code>Optional</code> is covariant
+(<code>+</code>) in <code>Error</code> because <code>Error</code> is only in return types of <code>Optional</code> methods.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -448,21 +451,43 @@ will let us know and usually propose an alternative approach.</p>
 </span><span class="lnt">5
 </span><span class="lnt">6
 </span><span class="lnt">7
-</span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">Optional</span><span class="o">[</span><span class="kt">+</span><span class="kt">Error</span>, <span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span> <span class="o">{</span>
   <span class="k">def</span> <span class="n">getOrError</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">From</span><span class="o">)</span><span class="k">:</span> <span class="kt">Either</span><span class="o">[</span><span class="kt">Error</span>, <span class="kt">To</span><span class="o">]</span>
   <span class="k">def</span> <span class="n">replace</span><span class="o">(</span><span class="n">to</span><span class="k">:</span> <span class="kt">To</span><span class="o">,</span> <span class="n">from</span><span class="k">:</span> <span class="kt">From</span><span class="o">)</span><span class="k">:</span> <span class="kt">From</span>
 
-  <span class="k">def</span> <span class="o">&gt;&gt;&gt;</span><span class="o">[</span><span class="kt">NewError</span> <span class="k">&gt;:</span> <span class="kt">Error</span>, <span class="kt">Next</span><span class="o">]</span><span class="o">(</span>
-    <span class="n">other</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">NewError</span>, <span class="kt">To</span>, <span class="kt">Next</span><span class="o">]</span>
-  <span class="o">)</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">NewError</span>, <span class="kt">From</span>, <span class="kt">Next</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+  <span class="k">def</span> <span class="o">&gt;&gt;&gt;</span><span class="o">[</span><span class="kt">NewError</span> <span class="k">&gt;:</span> <span class="kt">Error</span>, <span class="kt">Next</span><span class="o">]</span><span class="o">(</span><span class="n">other</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">NewError</span>, <span class="kt">To</span>, <span class="kt">Next</span><span class="o">]</span><span class="o">)</span>
+    <span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">NewError</span>, <span class="kt">From</span>, <span class="kt">Next</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
 <span class="o">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>We can redefine the same <code>Optional</code> exactly in the same way, but this time <code>property</code> compiles! Let's try with a more complex
-example.</p>
+</div><p>Let's go through <code>&gt;&gt;&gt;</code> signature with an example.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">obj</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">InvalidFormat</span>, <span class="kt">Config</span>, <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Config</span><span class="o">]</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+
+<span class="k">def</span> <span class="n">index</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">MissingKey</span>, <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Config</span><span class="o">]</span>, <span class="kt">Config</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+
+<span class="n">obj</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">index</span><span class="o">(</span><span class="s">&#34;foo&#34;</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>obj</code> has an error type of <code>InvalidFormat</code> and <code>&gt;&gt;&gt;</code> has the constraint <code>NewError &gt;: Error</code>. It means the
+error type of <code>index</code> must be a super type of <code>InvalidFormat</code>. We defined <code>index</code> with a <code>MissingKey</code> error which is not
+a super type of <code>InvalidFormat</code>. However, since <code>Optional</code> is covariant in <code>Error</code>, the Scala/Dotty compiler can automatically
+upcast <code>index</code> error to satisfy the constraint (see types in green).</p>
+<p><img src="/images/diagrams/config-failure-hierarchy.svg" alt="ConfigFailure hierarchy"></p>
+<p><code>ConfigFailure</code>, <code>AnyRef</code>, or <code>Any</code> are all valid options. The compiler has some heuristics to determine which
+type should be inferred. In this case, it is the lower bound <code>ConfigFailure</code>, see this <a href="https://www.youtube.com/watch?v=lMvOykNQ4zs">presentation</a>
+from Guillaume Martres for more details about type inference.</p>
+<p>Now, let's go back to our use case.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -511,8 +536,8 @@ example.</p>
 <span class="c1">// res23: Either[MissingKey, Int] = Left(MissingKey(bob))
 </span></code></pre></td></tr></table>
 </div>
-</div><p>Perfect. Type inference works, and we get a precise error. Since we are building an <code>Optional</code>, we can read and modify
-an arbitrary <code>Config</code>.</p>
+</div><p>Perfect. Type inference works, and we have precise error types. Since we are building an <code>Optional</code>, we can as easily
+modify an arbitrary <code>Config</code>.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -541,7 +566,77 @@ an arbitrary <code>Config</code>.</p>
 </span><span class="c1"></span><span class="c1">//))
 </span></code></pre></td></tr></table>
 </div>
+</div><p>This implementation satisfies all our requirements, but what about API compatibility? Many people currently use
+Monocle. Ideally, adding error reporting feature should not break any existing code. Unfortunately, adding an extra type
+parameter will require all signatures to change. Let's see what we could do.</p>
+<h2 id="backward-compatibility">Backward compatibility</h2>
+<p>Most users create <code>Optional</code> via optics composition or <code>Optional.apply</code> method.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">Optional</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">apply</span><span class="o">[</span><span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span><span class="o">(</span><span class="n">getOption</span><span class="k">:</span> <span class="kt">From</span> <span class="o">=&gt;</span> <span class="nc">Option</span><span class="o">[</span><span class="kt">To</span><span class="o">]</span><span class="o">)</span><span class="o">(</span>
+    <span class="n">replace</span><span class="k">:</span> <span class="kt">To</span> <span class="o">=&gt;</span> <span class="nc">From</span> <span class="k">=&gt;</span> <span class="nc">From</span><span class="o">)</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
 </div>
+</div><p>We can start by using a different name for our new encoding, e.g. <code>ErrorOptional</code>, and then we define a type alias and
+companion object to match the previous <code>Optional</code> shape.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">ErrorOptional</span><span class="o">[</span><span class="kt">+</span><span class="kt">Error</span>, <span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span> <span class="o">{</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span> <span class="o">}</span>
+
+<span class="k">type</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span> <span class="k">=</span> <span class="nc">ErrorOptional</span><span class="o">[</span><span class="kt">???</span>, <span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span>
+
+<span class="k">object</span> <span class="nc">Optional</span> <span class="o">{</span> 
+  <span class="k">def</span> <span class="n">apply</span><span class="o">[</span><span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span> <span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">From</span>, <span class="kt">To</span><span class="o">]</span>  
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>The question is, what should be the type of error for previously defined optics? Or another way to formulate it, what's
+an <code>Optional</code> with unknown/undefined error type? We could make a case for:</p>
+<ol>
+<li><code>Unit</code>, since <code>Either[Unit, A]</code> is equivalent to <code>Option[A]</code>.</li>
+<li><code>String</code>, it is the most common and straightforward error type.</li>
+<li><code>Any</code>, we can't introspect it (we can, but we shouldn't).</li>
+</ol>
+<p>In my opinion, <code>Any</code> is the best choice because it has the lovely property that composing a new <code>ErrorOptional</code> with an
+<code>Optional</code> returns an <code>Optional</code>. In other words, if any part of a complex optics has an unknown error type, then the
+entire optics has an unknown error type.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="nc">ErrorOptional</span><span class="o">[</span><span class="kt">E</span>, <span class="kt">A</span>, <span class="kt">B</span><span class="o">]</span> <span class="o">&gt;&gt;&gt;</span> <span class="nc">Optional</span><span class="o">[</span><span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">C</span><span class="o">]</span>
+<span class="nc">Optional</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">]</span> <span class="o">&gt;&gt;&gt;</span> <span class="nc">ErrorOptional</span><span class="o">[</span><span class="kt">E</span>, <span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">C</span><span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="conclusion-and-future-work">Conclusion and future work</h2>
+<p>I am super excited about this new encoding because it is to my knowledge a novel approach leveraging Scala unique features.
+There were several <a href="https://yairchu.github.io/posts/optics-with-error-reporting.html">attempts</a> to add error reporting to Haskell
+Lens, but the main issue seems to be related to type inference with the rest of the optics hierarchy (see discussion on <a href="http://oleg.fi/gists/posts/2017-04-26-indexed-poptics.html#coindexed">coindexing</a>).
+In my opinion, this should not be an issue in Scala as we use inheritance to encode the relationship between optics.</p>
+<p>In my next blog post, I will explore generalising error reporting to other types of optics like <code>Prism</code> or <code>Traversal</code>.
+For example, could we make a <code>Traversal</code> either accumulate errors or fail early? More intriguing, what does it mean for an
+<code>Optional</code> or a <code>Prism</code> to have <code>Nothing</code> has an error of type? (hint: this is equivalent to one the most well-known optics type).</p>
+<p>Stay tuned. In the meantime, you can follow me on <a href="https://twitter.com/JulienTruffaut">twitter</a> or discuss this article on reddit.</p>
+
   </div>
   <aside class = 'pt_1 aside'>
     <div class = 'aside_widget'>
