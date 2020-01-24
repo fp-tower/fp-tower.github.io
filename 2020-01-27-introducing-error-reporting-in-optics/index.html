@@ -130,7 +130,7 @@ As the name implies, the area targeted by an <code>Optional</code> may be missin
 <span class="c1">// res4: Map[String, Int] = Map(john -&gt; 20, marie -&gt; 34)
 </span></code></pre></td></tr></table>
 </div>
-</div><p>The interface follow three rules which ensure if an <code>Optional</code> successfully accesses a value, then it can only
+</div><p>The interfaces follow three rules which ensure that if an <code>Optional</code> successfully accesses a value, then it can only
 modify this particular section of the larger object and nothing else. These rules are generally checked using property based testing:</p>
 <ol>
 <li>if <code>getOption(from) == Some(x)</code>, then <code>replace(x, from) == from</code> .</li>
@@ -465,7 +465,7 @@ in <code>Error</code> because the two core methods of <code>Optional</code>: <co
 <span class="o">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p><code>&gt;&gt;&gt;</code> signature is a bit scary, so let's go through <code>&gt;&gt;&gt;</code> one example.</p>
+</div><p><code>&gt;&gt;&gt;</code> signature is a bit scary, let's go through an example.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -575,7 +575,7 @@ variance. There were several <a href="https://yairchu.github.io/posts/optics-wit
 reporting to Haskell Lens, but the main issue seems to be related to type inference (see discussion on <a href="http://oleg.fi/gists/posts/2017-04-26-indexed-poptics.html#coindexed">coindexing</a>).</p>
 <p>In my next blog post, I will explore the impact of error reporting on the rest of the optics hierarchy, e.g. can we return errors
 with other optics like <code>Prism</code> and <code>Traversal</code>? How can we add error reporting without breaking existing code (signature
-has changed)? What does it mean for <code>Optional</code> to have <code>Nothing</code> has error type? Surprisingly, we will see that variance
+has changed)? What does it mean for <code>Optional</code> to have <code>Nothing</code> as error type? Surprisingly, we will see that variance
 and inheritance combine exceptionally well together and offer a compelling optics encoding.</p>
 <p>Stay tuned. In the meantime, you can follow me on <a href="https://twitter.com/JulienTruffaut">twitter</a> or discuss this article on reddit.</p>
 
@@ -607,7 +607,7 @@ and inheritance combine exceptionally well together and offer a compelling optic
 <footer class = 'footer'>
   <ul class = 'wrap footer_inner'>
     <div>
-      © 2019 Truffaut Consultancy LTD. All rights reserved
+      © 2019-2020 Truffaut Consultancy LTD. All rights reserved
     </div>
     <div class  = 'social_icons'>
     
