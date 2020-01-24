@@ -17,6 +17,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href = '/images/icons/favicon-32x32.png'>
 <link rel="icon" type="image/png" sizes="16x16" href= '/images/icons/favicon-16x16.png'>
 <link rel='canonical' href="/2020-01-27-introducing-error-reporting-in-optics/">
+<meta property="og:image" content="/images/logo.png" />
 <link rel = 'stylesheet' href = '/main.bcea90a2c934f5106e01b4779a5df482552ddd8def71872cef60a0ef773f206d213ad1ea46a152b9f72f564f83f26606b73b7136615dcf2445e783467bbd7dba.css' integrity = 'sha512-vOqQosk09RBuAbR3ml30glUt3Y3vcYcs72Cg73c/IG0hOtHqRqFSufcvVk&#43;D8mYGtztxNmFdzyRF54NGe719ug=='>
 
   </head>
@@ -322,13 +323,13 @@ an error message.</p>
 <span class="o">}</span>
 
 <span class="k">val</span> <span class="n">config</span><span class="k">:</span> <span class="kt">Config</span> <span class="o">=</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
-  <span class="s">&#34;http-server&#34;</span> <span class="o">-&gt;</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
-    <span class="s">&#34;hostname&#34;</span> <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;localhost&#34;</span><span class="o">)</span><span class="o">,</span>
-    <span class="s">&#34;port&#34;</span>     <span class="o">-&gt;</span> <span class="nc">IntConfig</span><span class="o">(</span><span class="mi">8080</span><span class="o">)</span>
+  <span class="s">&#34;john&#34;</span>  <span class="o">-&gt;</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
+    <span class="s">&#34;name&#34;</span>  <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;John Doe&#34;</span><span class="o">)</span><span class="o">,</span>
+    <span class="s">&#34;age&#34;</span>   <span class="o">-&gt;</span> <span class="nc">IntConfig</span><span class="o">(</span><span class="mi">23</span><span class="o">)</span>
   <span class="o">)</span><span class="o">)</span><span class="o">,</span>
-  <span class="s">&#34;db&#34;</span> <span class="o">-&gt;</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
-    <span class="s">&#34;connection&#34;</span> <span class="o">-&gt;</span> <span class="nc">IntConfig</span><span class="o">(</span><span class="mi">4</span><span class="o">)</span><span class="o">,</span>
-    <span class="s">&#34;url&#34;</span>        <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;jdbc:postgresql://localhost:5432/db&#34;</span><span class="o">)</span>
+  <span class="s">&#34;marie&#34;</span> <span class="o">-&gt;</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
+    <span class="s">&#34;name&#34;</span>  <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;Marie Acme&#34;</span><span class="o">)</span><span class="o">,</span>
+    <span class="s">&#34;age&#34;</span>   <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;forty-three&#34;</span><span class="o">)</span>
   <span class="o">)</span><span class="o">)</span>
 <span class="o">)</span><span class="o">)</span>
 </code></pre></td></tr></table>
@@ -372,9 +373,9 @@ These <code>Optionals</code> can only fail because the config type is incorrect,
 <span class="n">int</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="nc">IntConfig</span><span class="o">(</span><span class="mi">12</span><span class="o">)</span><span class="o">)</span>
 <span class="c1">// res18: Either[InvalidFormat, Int] = Right(12)
 </span><span class="c1"></span>
-<span class="n">int</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;url&#34;</span><span class="o">)</span><span class="o">)</span>
+<span class="n">int</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;hello&#34;</span><span class="o">)</span><span class="o">)</span>
 <span class="c1">// res19: Either[InvalidFormat, Int] = 
-</span><span class="c1"></span><span class="c1">//   Left(InvalidFormat(Int,StringConfig(url)))
+</span><span class="c1"></span><span class="c1">//   Left(InvalidFormat(Int,StringConfig(hello)))
 </span></code></pre></td></tr></table>
 </div>
 </div><p>If you are familiar with optics hierarchy, you may have noticed that <code>int</code>, <code>str</code> and <code>obj</code> could be a <code>Prism</code> (a more
@@ -390,8 +391,8 @@ Next step, we can adapt <code>index</code> to return a <code>MissingKey</code> e
 <td class="lntd">
 <pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">index</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Optional</span><span class="o">[</span><span class="kt">MissingKey</span>, <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Config</span><span class="o">]</span>, <span class="kt">Config</span><span class="o">]</span> <span class="k">=</span> <span class="o">.</span><span class="o">.</span><span class="o">.</span>
 
-<span class="n">index</span><span class="o">(</span><span class="s">&#34;db&#34;</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span>
-<span class="c1">// res20: Either[MissingKey, Int] = Left(MissingKey(db))
+<span class="n">index</span><span class="o">(</span><span class="s">&#34;bob&#34;</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span>
+<span class="c1">// res20: Either[MissingKey, Int] = Left(MissingKey(bob))
 </span></code></pre></td></tr></table>
 </div>
 </div><p>Finally, let's define an optics called <code>property</code> such as we can have a friendly syntax to access nested <code>Config</code> objects.</p>
@@ -402,9 +403,9 @@ Next step, we can adapt <code>index</code> to return a <code>MissingKey</code> e
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">property</span><span class="o">(</span><span class="s">&#34;http-server&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;hostname&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">str</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">property</span><span class="o">(</span><span class="s">&#34;john&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;age&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">int</span>
 
-<span class="n">property</span><span class="o">(</span><span class="s">&#34;db&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;connection&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">int</span>
+<span class="n">property</span><span class="o">(</span><span class="s">&#34;marie&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;name&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">str</span>
 </code></pre></td></tr></table>
 </div>
 </div><p><code>Property</code> checks if a <code>Config</code> is an <code>Object</code>, and then it focuses into a key of the <code>Map</code>. The error type of <code>property</code>
@@ -520,23 +521,23 @@ from Guillaume Martres for more details about type inference.</p>
   <span class="n">obj</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">index</span><span class="o">(</span><span class="n">key</span><span class="o">)</span>
 
 <span class="k">val</span> <span class="n">config</span><span class="k">:</span> <span class="kt">Config</span> <span class="o">=</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
-  <span class="s">&#34;http-server&#34;</span> <span class="o">-&gt;</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
-    <span class="s">&#34;hostname&#34;</span> <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;localhost&#34;</span><span class="o">)</span><span class="o">,</span>
-    <span class="s">&#34;port&#34;</span>     <span class="o">-&gt;</span> <span class="nc">IntConfig</span><span class="o">(</span><span class="mi">8080</span><span class="o">)</span>
+  <span class="s">&#34;john&#34;</span>  <span class="o">-&gt;</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
+    <span class="s">&#34;name&#34;</span>  <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;John Doe&#34;</span><span class="o">)</span><span class="o">,</span>
+    <span class="s">&#34;age&#34;</span>   <span class="o">-&gt;</span> <span class="nc">IntConfig</span><span class="o">(</span><span class="mi">23</span><span class="o">)</span>
   <span class="o">)</span><span class="o">)</span><span class="o">,</span>
-  <span class="s">&#34;db&#34;</span> <span class="o">-&gt;</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
-    <span class="s">&#34;connection&#34;</span> <span class="o">-&gt;</span> <span class="nc">IntConfig</span><span class="o">(</span><span class="mi">4</span><span class="o">)</span><span class="o">,</span>
-    <span class="s">&#34;url&#34;</span>        <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;jdbc:postgresql://localhost:5432/db&#34;</span><span class="o">)</span>
+  <span class="s">&#34;marie&#34;</span> <span class="o">-&gt;</span> <span class="nc">ObjectConfig</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span>
+    <span class="s">&#34;name&#34;</span>  <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;Marie Acme&#34;</span><span class="o">)</span><span class="o">,</span>
+    <span class="s">&#34;age&#34;</span>   <span class="o">-&gt;</span> <span class="nc">StringConfig</span><span class="o">(</span><span class="s">&#34;forty-three&#34;</span><span class="o">)</span>
   <span class="o">)</span><span class="o">)</span>
 <span class="o">)</span><span class="o">)</span>
 
-<span class="o">(</span><span class="n">property</span><span class="o">(</span><span class="s">&#34;http-server&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;port&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">int</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="n">config</span><span class="o">)</span>
-<span class="c1">// res21: Either[MissingKey, Int] = Right(8080)
-</span><span class="c1"></span><span class="o">(</span><span class="n">property</span><span class="o">(</span><span class="s">&#34;db&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;connection&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">str</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="n">config</span><span class="o">)</span>
+<span class="o">(</span><span class="n">property</span><span class="o">(</span><span class="s">&#34;john&#34;</span> <span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;age&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">int</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="n">config</span><span class="o">)</span>
+<span class="c1">// res21: Either[MissingKey, Int] = Right(23)
+</span><span class="c1"></span><span class="o">(</span><span class="n">property</span><span class="o">(</span><span class="s">&#34;marie&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;age&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">int</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="n">config</span><span class="o">)</span>
 <span class="c1">// res22: Either[MissingKey, Int] = 
-</span><span class="c1"></span><span class="c1">//   Left(InvalidFormat(String,IntConfig(4)))
-</span><span class="c1"></span><span class="o">(</span><span class="n">property</span><span class="o">(</span><span class="s">&#34;kafka&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;port&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">int</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="n">config</span><span class="o">)</span>
-<span class="c1">// res23: Either[MissingKey, Int] = Left(MissingKey(kafka))
+</span><span class="c1"></span><span class="c1">//   Left(InvalidFormat(Int,StringConfig(forty-three)))
+</span><span class="c1"></span><span class="o">(</span><span class="n">property</span><span class="o">(</span><span class="s">&#34;bob&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;age&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">int</span><span class="o">)</span><span class="o">.</span><span class="n">getOrError</span><span class="o">(</span><span class="n">config</span><span class="o">)</span>
+<span class="c1">// res23: Either[MissingKey, Int] = Left(MissingKey(bob))
 </span></code></pre></td></tr></table>
 </div>
 </div><p>Perfect. Type inference works, and we kept precise error types. Since we are building an <code>Optional</code>, we can as easily
@@ -556,15 +557,15 @@ update an arbitrary <code>Config</code>.</p>
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="o">(</span><span class="n">property</span><span class="o">(</span><span class="s">&#34;http-server&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;port&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">int</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">9000</span><span class="o">,</span> <span class="n">config</span><span class="o">)</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="o">(</span><span class="n">property</span><span class="o">(</span><span class="s">&#34;john&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">property</span><span class="o">(</span><span class="s">&#34;age&#34;</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">int</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">10</span><span class="o">,</span> <span class="n">config</span><span class="o">)</span>
 <span class="c1">// res24: Config = ObjectConfig(Map(
-</span><span class="c1"></span><span class="c1">//  &#34;http-server&#34; -&gt; ObjectConfig(Map(
-</span><span class="c1"></span><span class="c1">//    &#34;hostname&#34; -&gt; StringConfig(&#34;localhost&#34;),
-</span><span class="c1"></span><span class="c1">//    &#34;port&#34;     -&gt; IntConfig(9000)
+</span><span class="c1"></span><span class="c1">//  &#34;john&#34;  -&gt; ObjectConfig(Map(
+</span><span class="c1"></span><span class="c1">//    &#34;name&#34;  -&gt; StringConfig(&#34;John Doe&#34;),
+</span><span class="c1"></span><span class="c1">//    &#34;age&#34;   -&gt; IntConfig(10)
 </span><span class="c1"></span><span class="c1">//  )),
-</span><span class="c1"></span><span class="c1">//  &#34;db&#34; -&gt; ObjectConfig(Map(
-</span><span class="c1"></span><span class="c1">//    &#34;connection&#34; -&gt; IntConfig(4),
-</span><span class="c1"></span><span class="c1">//    &#34;url&#34;        -&gt; StringConfig(&#34;jdbc:postgresql://localhost:5432/db&#34;)
+</span><span class="c1"></span><span class="c1">//  &#34;marie&#34; -&gt; ObjectConfig(Map(
+</span><span class="c1"></span><span class="c1">//    &#34;name&#34;  -&gt; StringConfig(&#34;Marie Acme&#34;),
+</span><span class="c1"></span><span class="c1">//    &#34;age&#34;   -&gt; StringConfig(&#34;forty-three&#34;)
 </span><span class="c1"></span><span class="c1">//  ))
 </span><span class="c1"></span><span class="c1">//))
 </span></code></pre></td></tr></table>
