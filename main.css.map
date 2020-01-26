@@ -1,7 +1,7 @@
 {
 	"version": 3,
 	"file": "main.css",
-	"sourceRoot": "/Users/trufj/project/blog",
+	"sourceRoot": "/Users/julien/project/blog",
 	"sources": [
 		"assets/main.scss",
 		"assets/_variables.scss",
