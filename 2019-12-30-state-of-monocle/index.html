@@ -13,24 +13,31 @@
 In Monocle, …'>
 <meta property = 'og:url' content = '/2019-12-30-state-of-monocle/' />
 
-<link rel=icon href="/images/apple-coach-logo-only.svg" sizes="any" type="image/svg+xml">
-<link rel="apple-touch-icon" sizes="180x180" href = '/images/icons/apple-touch-icon.png'>
-<link rel="icon" type="image/png" sizes="32x32" href = '/images/icons/favicon-32x32.png'>
-<link rel="icon" type="image/png" sizes="16x16" href= '/images/icons/favicon-16x16.png'>
-<link rel='canonical' href="/2019-12-30-state-of-monocle/">
+<link rel="icon" type="image/png" sizes="32x32" href='/images/icons/favicon-32x32.png'>
+<link rel="icon" type="image/png" sizes="16x16" href='/images/icons/favicon-16x16.png'>
 <meta property="og:image" content="/images/logo.png" />
-<link rel = 'stylesheet' href = '/main.bcea90a2c934f5106e01b4779a5df482552ddd8def71872cef60a0ef773f206d213ad1ea46a152b9f72f564f83f26606b73b7136615dcf2445e783467bbd7dba.css' integrity = 'sha512-vOqQosk09RBuAbR3ml30glUt3Y3vcYcs72Cg73c/IG0hOtHqRqFSufcvVk&#43;D8mYGtztxNmFdzyRF54NGe719ug=='>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+<link rel = 'stylesheet' href = '/main.b673ef4189c050877c903c3be7abd0f52281b97cafe5a572a9bc67a8b66baf58d93e93382d76a081443dbf452f7c2970b3469fb1b8fbc00ba48bf9e5c9b157b2.css' integrity = 'sha512-tnPvQYnAUId8kDw756vQ9SKBuXyv5aVyqbxnqLZrr1jZPpM4LXaggUQ9v0UvfClws0afsbj7wAuki/nlybFXsg=='>
 
   </head>
-	<body>
-<header class = 'nav_header'>
+  <body>
+<header class = 'nav_header nav_fixed nav_home'>
   <div class = 'nav_top wrap'>
-    <a class = 'nav_brand' href='/'>
-      <img src = '/images/logo-white.png' class = 'nav_logo'>
+    <a class = 'nav_brand' href='https://www.fp-tower.com/'>
+      <img src = '/images/logo.png' class = 'nav_logo'>
     </a>
     <nav class = 'nav center'>
+      <a href = 'https://www.fp-tower.com' class = 'nav_item '>
+        courses
+      </a>
       <a href = '/' class = 'nav_item '>
-        home
+        blog
+      </a>
+      <a href = '/contact-us/' class = 'nav_item '>
+        contact us
+      </a>
+      <a href = 'https://www.fp-tower.com' class = 'nav_item '>
+        jobs
       </a>
     </nav>
     <div class = 'nav_toggle'>&#9776;</div>
@@ -38,21 +45,29 @@ In Monocle, …'>
 </header>
 
     <main>
-<div class = 'grid-reverse wrap pt_4'>
-  <div class = 'contents'>
-    <h1>State of Monocle</h1>
-    
-<div class = 'author'>
-  <div class = 'avatar'>
-    <img src = '/images/julien-truffaut.jpg'>
-  </div>
-  <div class = 'author_intro'>
-    <h3 class = 'author_name'><a href = 'https://twitter.com/JulienTruffaut' target = '_blank' rel = 'noopener' title = 'Julien Truffaut linkedin'>julien truffaut <span class = 'tag'>follow</span></a></h3>
-    <p class = 'date'>30 Dec . 4 min read</p>
-  </div>
+<div class = 'page_banner' style = 'background-image:url(/images/monocle-logo.png)'></div>
+<div class = 'grid-reverse wrap pt_2'>
+  <article class = 'contents'>
+    <div class = 'center pb_1'>
+      <h1 class = 'excerpt_title'>State of Monocle</h1>
+      <div class = 'meta'>
+  <span class = 'meta_date'>December 30, 2019</span>
+  <span class = 'meta_separator'>|</span>
+  
+<span class = 'meta_avatar avatar'>
+  <img src = '/images/julien-truffaut.jpg'>
+</span>
+<span class = 'meta_author'>
+  <a href = 'https://twitter.com/JulienTruffaut' target = '_blank' rel = 'noopener' title = 'Julien Truffaut linkedin'>
+    julien truffaut 
+    <span class = 'meta_tag tag'>FOLLOW</span>
+  </a>
+</span>
+
 </div>
 
-    <img src = '/images/monocle-logo.png' alt = 'State of Monocle'><p><a href="https://github.com/julien-truffaut/Monocle">Monocle</a>, like many other Scala functional libraries, was inspired by Haskell.
+
+    </div><p><a href="https://github.com/julien-truffaut/Monocle">Monocle</a>, like many other Scala functional libraries, was inspired by Haskell.
 In our case, it is the <a href="https://hackage.haskell.org/package/lens">Lens</a> library by Edward Kmett and al.</p>
 <p>In Monocle, we experimented with various optics encoding: pair of functions, Van Laarhoven, and profunctor
 (see <a href="https://github.com/julien-truffaut/LensImpl">LensImpl</a>). The JVM and Haskell runtime are hugely different, and an
@@ -272,51 +287,65 @@ to leverage Scala features such as inheritance, class methods, and variance. Mor
 maintainers. You don't necessarily need to be an expert in optics. We also need help to create benchmarks, documentation,
 tutorials, and general API feedback.</p>
 
-  </div>
-  <aside class = 'pt_1 aside'>
-    <div class = 'aside_widget'>
-      <h3 class = 'mb_1'>Tags</h3>
+  </article>
+  <aside class = 'aside'><div class = 'aside_widget'>
+  <h3 class = 'mb_1 font_light'>Tags</h3>
 <div class = 'tags'>
   
-  <a href = '/tags/scala' class = 'tag'>scala</a>
+</div>
+
+<div class = 'tags'>
+  
+  <a href = '/tags/monocle/' class = 'tag'>monocle</a>
    
-  <a href = '/tags/monocle' class = 'tag'>monocle</a>
+  <a href = '/tags/scala/' class = 'tag'>scala</a>
    
 </div>
 
 
-      
-      
-      <section class = 'course'>
-        <h3>Learn FP in Scala</h3>
-        <p><p>Are you interested in learning functional programming in Scala? <a href="https://github.com/fp-tower/foundation">Take our course</a></p>
-<p><a href="https://github.com/fp-tower/foundation"><img src="/images/foundation.png" alt="Foundation Course Logo"></a></p>
-</p>
-      </section>
-    </div>
+  
+  
+  <section class = 'course'>
+    <h3>LEARN FP IN SCALA</h3>
+    <p>Do you want to master functional Scala and take your career and skills to a whole new level? <a href="https://www.fp-tower.com">Take our course</a></p>
+  </section>
+</div>
+
   </aside>
+</div>
+<div class = "banner">
+  <script async data-uid="58e1a4e5c4" src="https://fp-tower.ck.page/58e1a4e5c4/index.js"></script>
+
 </div>
     </main>
 <footer class = 'footer'>
-  <ul class = 'wrap footer_inner'>
-    <div>
-      © 2019-2020 Truffaut Consultancy LTD. All rights reserved
+  <div class = 'wrap footer_inner'>
+    <div class  = 'footer_icons footer_row'>
+      <span class = 'font_semibold'>STAY IN TOUCH</span>&nbsp;&nbsp; 
+      
+      <a href = 'https://twitter.com/TheFpTower' target = '_blank' rel = 'noopener' title = 'follow on twitter' class = 'footer_icon twitter'></a>
+      
+      <a href = 'https://www.youtube.com/channel/UCaq_IWe10wblAVaA80XH-Qg' target = '_blank' rel = 'noopener' title = 'follow on youtube' class = 'footer_icon youtube'></a>
+      
+      <a href = 'https://fp-tower.slack.com/' target = '_blank' rel = 'noopener' title = 'follow on slack' class = 'footer_icon slack'></a>
+      
+      <a href = 'https://github.com/fp-tower' target = '_blank' rel = 'noopener' title = 'follow on github' class = 'footer_icon github'></a>
+      
     </div>
-    <div class  = 'social_icons'>
-    
-      <a href = 'https://github.com/julien-truffaut' target = '_blank' rel = 'noopener' title = 'follow on github' class = 'social_icon github'></a>
-    
-      <a href = 'https://www.linkedin.com/in/julientruffaut/' target = '_blank' rel = 'noopener' title = 'follow on linkedin' class = 'social_icon linkedin'></a>
-    
-      <a href = 'https://twitter.com/JulienTruffaut' target = '_blank' rel = 'noopener' title = 'follow on twitter' class = 'social_icon twitter'></a>
-    
-      <a href = 'https://www.reddit.com/user/julien-truffaut' target = '_blank' rel = 'noopener' title = 'follow on reddit' class = 'social_icon reddit'></a>
-    
+    <div class = 'footer_row footer_lower'>
+      <span>Copyright 2020 Truffaut Consultancy LTD</span>
+      <a class = 'nav_brand' href='https://www.fp-tower.com/'>
+        <img src = '/images/logo.png' class = 'footer_logo'>
+      </a>
+      <div class = 'nav_parent'>
+        <a href = 'https://www.fp-tower.com' class = ''>Privacy Policy</a>
+        <a href = '' class = ''>.</a>
+        <a href = 'https://www.fp-tower.com' class = ''>Terms &amp; Conditions</a>
+      </div>
     </div>
-  </ul>
+  </div>
 </footer>
 
     <script src = '/js/index.js'></script>
-
   </body>
 </html>

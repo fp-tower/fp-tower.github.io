@@ -6,15 +6,25 @@
     <description>Recent content in Blog on fp-tower blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 25 Dec 2019 22:13:28 +0300</lastBuildDate>
+    <lastBuildDate>Tue, 07 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>Optics size</title>
+      <link>/2020-04-25-optics-size/</link>
+      <pubDate>Tue, 07 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020-04-25-optics-size/</guid>
+      <description>In my previous post, I discussed how to change Optional such as we can get useful error messages. The best solution encoded the error type in an extra covariant type parameter, similar to how ZIO error works. Today, I would like to present how this simple change will have a profound impact on the optics hierarchy, making it simpler and more expressive at the same time!
+Optics hierarchy In the current version of Monocle, we support the following optics:</description>
+    </item>
+    
+    <item>
       <title>Introducing error reporting in optics</title>
       <link>/2020-01-27-introducing-error-reporting-in-optics/</link>
-      <pubDate>Tue, 07 Jan 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020-01-27-introducing-error-reporting-in-optics/</guid>
       <description>A frequently requested feature is the ability to report why an optic failed. It is particularly crucial when you build a sophisticated optic. Say you have a large configuration document, and you want to focus on kafka.topics.order-events.partitions. There may not be a partitions key, or if it exists, it may have an unexpected format, e.g. it is a String instead of an Int. In Monocle and other optics libraries, we currently cannot provide any details about the failure.</description>
