@@ -2,50 +2,50 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Blog on fp-tower blog</title>
-    <link>/</link>
+    <link>https://blog.fp-tower.com/</link>
     <description>Recent content in Blog on fp-tower blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Tue, 07 Apr 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://blog.fp-tower.com/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Optics size</title>
-      <link>/2020-04-25-optics-size/</link>
+      <link>https://blog.fp-tower.com/2020-04-25-optics-size/</link>
       <pubDate>Tue, 07 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020-04-25-optics-size/</guid>
+      <guid>https://blog.fp-tower.com/2020-04-25-optics-size/</guid>
       <description>In my previous post, I discussed how to change Optional such as we can get useful error messages. The best solution encoded the error type in an extra covariant type parameter, similar to how ZIO error works. Today, I would like to present how this simple change will have a profound impact on the optics hierarchy, making it simpler and more expressive at the same time!
 Optics hierarchy In the current version of Monocle, we support the following optics:</description>
     </item>
     
     <item>
       <title>Introducing error reporting in optics</title>
-      <link>/2020-01-27-introducing-error-reporting-in-optics/</link>
+      <link>https://blog.fp-tower.com/2020-01-27-introducing-error-reporting-in-optics/</link>
       <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020-01-27-introducing-error-reporting-in-optics/</guid>
+      <guid>https://blog.fp-tower.com/2020-01-27-introducing-error-reporting-in-optics/</guid>
       <description>A frequently requested feature is the ability to report why an optic failed. It is particularly crucial when you build a sophisticated optic. Say you have a large configuration document, and you want to focus on kafka.topics.order-events.partitions. There may not be a partitions key, or if it exists, it may have an unexpected format, e.g. it is a String instead of an Int. In Monocle and other optics libraries, we currently cannot provide any details about the failure.</description>
     </item>
     
     <item>
       <title>Monocle 3.x</title>
-      <link>/2020-01-06-monocle-3/</link>
+      <link>https://blog.fp-tower.com/2020-01-06-monocle-3/</link>
       <pubDate>Mon, 06 Jan 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020-01-06-monocle-3/</guid>
+      <guid>https://blog.fp-tower.com/2020-01-06-monocle-3/</guid>
       <description>We recently started the development of the next major version of Monocle, Monocle 3.x. In this post, I would like to explain our objectives and discuss some of the changes we intend to make.
 Monocle 3.x will be a complete rewrite. It doesn&#39;t mean we will change everything, but we will question every aspect of the library: optics encoding, API, names, dependencies, etc. We defined the following objectives to help us make trade-offs in the new design:</description>
     </item>
     
     <item>
       <title>State of Monocle</title>
-      <link>/2019-12-30-state-of-monocle/</link>
+      <link>https://blog.fp-tower.com/2019-12-30-state-of-monocle/</link>
       <pubDate>Mon, 30 Dec 2019 00:00:00 +0000</pubDate>
       
-      <guid>/2019-12-30-state-of-monocle/</guid>
+      <guid>https://blog.fp-tower.com/2019-12-30-state-of-monocle/</guid>
       <description>Monocle, like many other Scala functional libraries, was inspired by Haskell. In our case, it is the Lens library by Edward Kmett and al.
 In Monocle, we experimented with various optics encoding: pair of functions, Van Laarhoven, and profunctor (see LensImpl). The JVM and Haskell runtime are hugely different, and an encoding that works well in Haskell can be inefficient in Scala. For example, Haskell relies on zero cost wrapper (newtype) to effectively select typeclass instances, but we don&#39;t have an equivalent in Scala/JVM yet (opaque types may help).</description>
     </item>

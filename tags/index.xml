@@ -2,30 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on fp-tower blog</title>
-    <link>/tags/</link>
+    <link>https://blog.fp-tower.com/tags/</link>
     <description>Recent content in Tags on fp-tower blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Tue, 07 Apr 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://blog.fp-tower.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>monocle</title>
-      <link>/tags/monocle/</link>
+      <link>https://blog.fp-tower.com/tags/monocle/</link>
       <pubDate>Tue, 07 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>/tags/monocle/</guid>
+      <guid>https://blog.fp-tower.com/tags/monocle/</guid>
       <description></description>
     </item>
     
     <item>
       <title>scala</title>
-      <link>/tags/scala/</link>
+      <link>https://blog.fp-tower.com/tags/scala/</link>
       <pubDate>Tue, 07 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>/tags/scala/</guid>
+      <guid>https://blog.fp-tower.com/tags/scala/</guid>
       <description></description>
     </item>
     
