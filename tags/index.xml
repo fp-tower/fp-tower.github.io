@@ -6,7 +6,7 @@
     <description>Recent content in Tags on fp-tower blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 20 Oct 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 22 Dec 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://blog.fp-tower.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,9 +14,18 @@
     <item>
       <title>foundations</title>
       <link>https://blog.fp-tower.com/tags/foundations/</link>
-      <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 22 Dec 2020 00:00:00 +0000</pubDate>
       
       <guid>https://blog.fp-tower.com/tags/foundations/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>video production</title>
+      <link>https://blog.fp-tower.com/tags/video-production/</link>
+      <pubDate>Tue, 22 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fp-tower.com/tags/video-production/</guid>
       <description></description>
     </item>
     
