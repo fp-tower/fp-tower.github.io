@@ -144,7 +144,7 @@ Then, we'll set a few more milestones to incorporate feedback and include more c
 <p><em>Planned for M1</em></p>
 <p>In Monocle 2, each optics have several compose functions such as <code>composeLens</code>, <code>composePrism</code>, <code>composeOptional</code> (see full table). This causes two problems:</p>
 <ol>
-<li>Verbose optics composition, <code>address composeOptional index(“home”) composeLens postcode</code>. Here, more than half of the code consists of composeX methods.</li>
+<li>Verbose optics composition, <code>address composeOptional index(&quot;home&quot;) composeLens postcode</code>. Here, more than half of the code consists of composeX methods.</li>
 <li>Users need to know that <code>index</code> is an <code>Optional</code> while <code>postcode</code> is a <code>Lens</code>.</li>
 </ol>
 <p>Additionally, optics composition works very much like function composition; if you have an <code>Optic[A, B]</code> and <code>Optic[B, C]</code>, you can compose them to get an <code>Optic[A, C]</code>. However, in the example below, you will notice that the order of type parameters in <code>Optic#compose</code> is more similar to the <code>andThen</code> method of <code>Function1</code> than to <code>compose</code>.</p>
@@ -174,7 +174,7 @@ Then, we'll set a few more milestones to incorporate feedback and include more c
 <ol>
 <li>Optics with type parameters, e.g. <code>some[A]</code>.</li>
 <li>Optics coming from typeclasses such as <code>index</code> or <code>each</code>.
-However, most of these issues should be fixed by “shortcuts for popular optics” (see below) and Scala 3 which has a much better type inference algorithm.</li>
+However, most of these issues should be fixed by &quot;shortcuts for popular optics&quot; (see below) and Scala 3 which has a much better type inference algorithm.</li>
 </ol>
 <h3 id="12-shortcuts-for-popular-optics-978httpsgithubcomoptics-devmonoclepull978">1.2 Shortcuts for popular optics <a href="https://github.com/optics-dev/Monocle/pull/978">#978</a>,</h3>
 <p><em>Planned for M1</em></p>
@@ -211,12 +211,12 @@ However, most of these issues should be fixed by “shortcuts for popular optics
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">paymentMethods</span><span class="o">.</span><span class="n">index</span><span class="o">(</span><span class="err">“</span><span class="nc">Personal</span><span class="err">”</span><span class="o">)</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">expirationDate</span><span class="o">)</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">paymentMethods</span><span class="o">.</span><span class="n">index</span><span class="o">(</span><span class="s">&#34;Personal&#34;</span><span class="o">)</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">expirationDate</span><span class="o">)</span>
 
 <span class="c1">// instead of
 </span><span class="c1"></span><span class="k">import</span> <span class="nn">monocle.function.Index.index</span>
 
-<span class="n">paymentMethods</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="err">“</span><span class="nc">Personal</span><span class="err">”</span><span class="o">)</span><span class="o">)</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">expirationDate</span><span class="o">)</span>
+<span class="n">paymentMethods</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="s">&#34;Personal&#34;</span><span class="o">)</span><span class="o">)</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">expirationDate</span><span class="o">)</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>This change has multiple consequences:</p>
@@ -311,15 +311,15 @@ The code is still verbose when you need to mix different types of optics, e.g.</
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">User</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">email</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">email</span> <span class="k">=</span> <span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">email</span><span class="o">)</span><span class="o">.</span><span class="n">withDefault</span><span class="o">(</span><span class="err">“</span><span class="n">no</span><span class="o">-</span><span class="n">reply</span><span class="nd">@foo</span><span class="o">.</span><span class="n">com</span><span class="err">”</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">bob</span> <span class="k">=</span> <span class="nc">User</span><span class="o">(</span><span class="err">“</span><span class="n">bob</span><span class="err">”</span><span class="o">,</span> <span class="nc">None</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">email</span> <span class="k">=</span> <span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">email</span><span class="o">)</span><span class="o">.</span><span class="n">withDefault</span><span class="o">(</span><span class="s">&#34;no-reply@foo.com&#34;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">bob</span> <span class="k">=</span> <span class="nc">User</span><span class="o">(</span><span class="s">&#34;bob&#34;</span><span class="o">,</span> <span class="nc">None</span><span class="o">)</span>
 
 <span class="n">email</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">bob</span><span class="o">)</span>
-<span class="c1">// res: String = “no-reply@foo.com”
+<span class="c1">// res: String = &#34;no-reply@foo.com&#34;
 </span><span class="c1"></span>
 
 <span class="n">email</span><span class="o">.</span><span class="n">modify</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">toUpperCase</span><span class="o">)</span><span class="o">(</span><span class="n">bob</span><span class="o">)</span>
-<span class="c1">// User(“bob”,Some(“NO-REPLY@FOO.COM”))
+<span class="c1">// User(&#34;bob&#34;,Some(&#34;NO-REPLY@FOO.COM&#34;))
 </span></code></pre></td></tr></table>
 </div>
 </div><h3 id="22-filter">2.2 filter</h3>
@@ -359,9 +359,9 @@ The code is still verbose when you need to mix different types of optics, e.g.</
 
 <span class="n">expensiveItems</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="nc">Focus</span><span class="o">[</span><span class="kt">Item</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">quantity</span><span class="o">)</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span><span class="o">(</span><span class="n">orders</span><span class="o">)</span>
 <span class="c1">// res: Order = Order(123, List(
-</span><span class="c1"></span><span class="c1">//    Item(“Lego set”, 1, 13.99),  
+</span><span class="c1"></span><span class="c1">//    Item(&#34;Lego set&#34;, 1, 13.99),  
 </span><span class="c1"></span><span class="c1">//    Item(&#34;Puzzle&#34;, 1, 8.99),
-</span><span class="c1"></span><span class="c1">//    Item(“Book”, 1, 11.49)
+</span><span class="c1"></span><span class="c1">//    Item(&#34;Book&#34;, 1, 11.49)
 </span><span class="c1"></span><span class="c1">//  ))
 </span><span class="c1"></span>
 </code></pre></td></tr></table>
@@ -383,7 +383,7 @@ The code is still verbose when you need to mix different types of optics, e.g.</
 <p>Automate the migration from Monocle 2 to 3 using Scalafix. See this list of API changes <a href="https://github.com/optics-dev/Monocle/issues/1001">#1001</a>.</p>
 <h3 id="42-new-website">4.2 New website</h3>
 <p><em>Planned for M3</em></p>
-<p>The current microsite is too focused on optics internals. We need to rewrite the documentation from scratch with a particular focus on the “Getting Started” section to better onboard new users.</p>
+<p>The current microsite is too focused on optics internals. We need to rewrite the documentation from scratch with a particular focus on the &quot;Getting Started&quot; section to better onboard new users.</p>
 <h3 id="43-online-course">4.3 Online course</h3>
 <p><em>Late 2021</em></p>
 <p>FP-Tower is considering a short (3-5 hours) online course around Monocle API and optics fundamentals. If you would be interested in this type of resource, please let us know.</p>
@@ -415,7 +415,7 @@ The code is still verbose when you need to mix different types of optics, e.g.</
   
   
   <section class = 'course'>
-    <h3>LEARN TO DESIGN AND TEST FUNCTIONAL API</h3>
+    <h3>LEARN TO DESIGN AND TEST FUNCTIONAL APIS</h3>
     <p>Do you want to learn the practical side of functional programming and take your career to the next level? <a href="https://www.fp-tower.com">Take our course</a></p>
   </section>
 </div>
