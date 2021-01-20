@@ -184,39 +184,52 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
 <p>This is partly a documentation problem, but it is also due to the nature of optics composition. You can compose almost any pair of optics together as long as the output type of the first matches the input type of the second. This freedom makes it difficult to decide which to use. At least, this was the case in Monocle 2. In Monocle 3, we will add methods on all optics for all common cases of optics compositions. For example,</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">address</span><span class="o">.</span><span class="n">some</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">postcode</span><span class="o">)</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">User</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">addresses</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Address</span><span class="o">]</span><span class="o">)</span>
 
-<span class="c1">// instead of
-</span><span class="c1"></span><span class="k">import</span> <span class="nn">monocle.std.option.some</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">Address</span><span class="o">(</span>
+  <span class="n">streetNumber</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> 
+  <span class="n">postCode</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> 
+  <span class="n">county</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+<span class="o">)</span>
 
-<span class="n">address</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">some</span><span class="o">)</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">postcode</span><span class="o">)</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>or</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">paymentMethods</span><span class="o">.</span><span class="n">index</span><span class="o">(</span><span class="s">&#34;Personal&#34;</span><span class="o">)</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">expirationDate</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">addresses</span> <span class="k">=</span> <span class="nc">GenLens</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">addresses</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">county</span>    <span class="k">=</span> <span class="nc">GenLens</span><span class="o">[</span><span class="kt">Address</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">county</span><span class="o">)</span>
 
-<span class="c1">// instead of
+<span class="c1">// Monocle 3
+</span><span class="c1"></span><span class="n">addresses</span><span class="o">.</span><span class="n">index</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">county</span><span class="o">)</span><span class="o">.</span><span class="n">some</span>
+
+<span class="c1">// Monocle 2
 </span><span class="c1"></span><span class="k">import</span> <span class="nn">monocle.function.Index.index</span>
+<span class="k">import</span> <span class="nn">monocle.std.option.some</span>
 
-<span class="n">paymentMethods</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="s">&#34;Personal&#34;</span><span class="o">)</span><span class="o">)</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">expirationDate</span><span class="o">)</span>
+<span class="n">addresses</span>
+  <span class="o">.</span><span class="n">composeOptional</span><span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">composeLens</span><span class="o">(</span><span class="n">county</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">composePrism</span><span class="o">(</span><span class="n">some</span><span class="o">)</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>This change has multiple consequences:</p>
@@ -247,13 +260,17 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
 </div><p>While this is a linguistic issue, not a bug: <code>set</code> implies it can insert a value when there is none, which is not possible. Therefore, we have decided to deprecate <code>set</code> in favor of <code>replace</code>. Hopefully, the latter indicates we are updating an existing value rather than inserting one.</p>
 <h3 id="14-focus-macro">1.4 Focus macro</h3>
 <p><em>Planned for M2</em></p>
-<p>Monocle offers several macros to automate optics creation:
-<code>GenLens</code> to focus into a field of a case class.
-<code>GenPrism</code> to focus into a branch of an enumeration (<code>sealed trait</code>).
-<code>GenIso</code> for new types (e.g. <code>case class Id(value: Long)</code>) or to see a case class as a tuple of fields.</p>
-<p>This approach presents a few issues:
-Users need to know which macro to use for their use case (barrier to entry)
-The code is still verbose when you need to mix different types of optics, e.g.</p>
+<p>Monocle offers several macros to automate optics creation:</p>
+<ul>
+<li><code>GenLens</code> to focus into a field of a case class.</li>
+<li><code>GenPrism</code> to focus into a branch of an enumeration (<code>sealed trait</code>).</li>
+<li><code>GenIso</code> for new types (e.g. <code>case class Id(value: Long)</code>) or to see a case class as a tuple of fields.</li>
+</ul>
+<p>This approach presents a few issues:</p>
+<ol>
+<li>Users need to know which macro to use for their use case (barrier to entry)</li>
+<li>The code is still verbose when you need to mix different types of optics, e.g.</li>
+</ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -270,9 +287,11 @@ The code is still verbose when you need to mix different types of optics, e.g.</
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">]</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">)</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">streetNumber</span><span class="o">)</span>
+<span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">]</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">)</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>No need to learn about and differentiate <code>Lens</code>, <code>Prism</code> or <code>Iso</code> anymore. The macro will generate the right type for the path.</p>
@@ -281,9 +300,11 @@ The code is still verbose when you need to mix different types of optics, e.g.</
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">]</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">)</span><span class="o">.</span><span class="n">getOption</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">streetNumber</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">15</span><span class="o">)</span>
+<span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">]</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">)</span><span class="o">.</span><span class="n">getOption</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>This syntax is particularly convenient for single-use optics as you don't need to give the optic name.</p>
@@ -343,7 +364,6 @@ The code is still verbose when you need to mix different types of optics, e.g.</
 </span><span class="lnt">15
 </span><span class="lnt">16
 </span><span class="lnt">17
-</span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">Order</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">items</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span><span class="o">)</span>
@@ -351,20 +371,19 @@ The code is still verbose when you need to mix different types of optics, e.g.</
 
 <span class="k">val</span> <span class="n">order</span> <span class="k">=</span> <span class="nc">Order</span><span class="o">(</span><span class="mi">123</span><span class="o">,</span> <span class="nc">List</span><span class="o">(</span>
   <span class="nc">Item</span><span class="o">(</span><span class="s">&#34;Lego set&#34;</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mf">13.99</span><span class="o">)</span><span class="o">,</span>
-  <span class="nc">Item</span><span class="o">(</span><span class="s">&#34;Puzzle&#34;</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mf">8.99</span><span class="o">)</span><span class="o">,</span>
-  <span class="nc">Item</span><span class="o">(</span><span class="s">&#34;Book&#34;</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mf">11.49</span><span class="o">)</span>
+  <span class="nc">Item</span><span class="o">(</span><span class="s">&#34;Puzzle&#34;</span>  <span class="o">,</span> <span class="mi">3</span><span class="o">,</span>  <span class="mf">8.99</span><span class="o">)</span><span class="o">,</span>
+  <span class="nc">Item</span><span class="o">(</span><span class="s">&#34;Book&#34;</span>    <span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mf">11.49</span><span class="o">)</span>
 <span class="o">)</span><span class="o">)</span>
 
 <span class="k">val</span> <span class="n">expensiveItems</span> <span class="k">=</span> <span class="nc">Focus</span><span class="o">[</span><span class="kt">Order</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">items</span><span class="o">)</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">unitPrice</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="o">)</span>
 
 <span class="n">expensiveItems</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="nc">Focus</span><span class="o">[</span><span class="kt">Item</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">quantity</span><span class="o">)</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span><span class="o">(</span><span class="n">orders</span><span class="o">)</span>
 <span class="c1">// res: Order = Order(123, List(
-</span><span class="c1"></span><span class="c1">//    Item(&#34;Lego set&#34;, 1, 13.99),  
-</span><span class="c1"></span><span class="c1">//    Item(&#34;Puzzle&#34;, 1, 8.99),
-</span><span class="c1"></span><span class="c1">//    Item(&#34;Book&#34;, 1, 11.49)
+</span><span class="c1"></span><span class="c1">//    Item(&#34;Lego set&#34;, 1, 13.99), // UPDATED
+</span><span class="c1"></span><span class="c1">//    Item(&#34;Puzzle&#34;  , 3,  8.99), 
+</span><span class="c1"></span><span class="c1">//    Item(&#34;Book&#34;    , 1, 11.49)  // UPDATED
 </span><span class="c1"></span><span class="c1">//  ))
-</span><span class="c1"></span>
-</code></pre></td></tr></table>
+</span></code></pre></td></tr></table>
 </div>
 </div><h2 id="3-smaller-footprint">3. Smaller footprint</h2>
 <p><em>Planned for M1</em></p>
