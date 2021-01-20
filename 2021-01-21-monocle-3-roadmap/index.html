@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head><title>Monocle 3 Roadmap | fp-tower blog</title>
+<meta charset='utf-8'>
+<meta name = 'viewport' content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
+<meta http-equiv = 'X-UA-Compatible' content = 'IE=edge'>
+<meta property = 'og:locale' content = 'en_US' />
+<meta property = 'og:type' content = 'article' />
+<meta property = 'og:title' content = 'Monocle 3 Roadmap' />
+<meta property = 'og:description' content = 'Monocle is quite an old Scala library. It was initially conceived in 2014 as a port of the Haskell Lens library. Over the years, we&#39;ve adapted the …'>
+<meta property = 'og:url' content = 'https://blog.fp-tower.com/2021-01-21-monocle-3-roadmap/' />
+<link rel="icon" type="image/png" sizes="32x32" href='https://blog.fp-tower.com/images/icons/favicon-32x32.png'>
+<link rel="icon" type="image/png" sizes="16x16" href='https://blog.fp-tower.com/images/icons/favicon-16x16.png'>
+  
+<meta name = 'keywords' content = 'fp-tower blog'>
+<meta name="description" content="Monocle is quite an old Scala library. It was initially conceived in 2014 as a port of the Haskell Lens library. Over the years, we&#39;ve adapted the optics …">
+<meta property="og:site_name" content="fp-tower blog">
+<meta property="og:title" content="Monocle 3 Roadmap">
+<meta property="og:description" content="Monocle is quite an old Scala library. It was initially conceived in 2014 as a port of the Haskell Lens library. Over the years, we&#39;ve adapted the optics …">
+<meta property="og:type" content="article">
+<meta property = 'og:image' content = 'https://blog.fp-tower.com/images/monocle3-banner-102-high-res-01.png'/>
+<meta property="og:url" content="https://blog.fp-tower.com/2021-01-21-monocle-3-roadmap/">
+<meta name = 'twitter:card' content = 'summary_large_image' />
+<meta name = 'twitter:creator' content = '@fptower'>
+<meta name = 'twitter:title' content = 'Monocle 3 Roadmap' />
+<meta property = 'twitter:description'  content = 'Monocle is quite an old Scala library. It was initially conceived in 2014 as a port of the Haskell Lens library. Over the years, we&#39;ve adapted the optics …'/>
+<meta name = 'twitter:image' content = 'https://blog.fp-tower.com/images/monocle3-banner-102-high-res-01.png' />
+  <meta property = 'article:published_time' content = '2021-01-20 00:00:00 &#43;0000 GMT' />
+  <script type = "application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "BlogPosting",
+      "mainEntityOfPage": "https:\/\/blog.fp-tower.com\/2021-01-21-monocle-3-roadmap\/",
+      "name": "fp-tower blog",
+      "headline": "Monocle 3 Roadmap",
+      "description": "Monocle is quite an old Scala library. It was initially conceived in 2014 as a port of the Haskell Lens library. Over the years, we've adapted the optics …",
+      "url": "https:\/\/blog.fp-tower.com\/2021-01-21-monocle-3-roadmap\/",
+      "datePublished": "2021-01-20T00:00:00Z",
+      "dateModified": "2021-01-20T00:00:00Z",
+      "author": {
+        "@type": "Person",
+        "name": "Julien Traffaut"
+      },
+      "image":{  
+        "@type":"ImageObject",
+          "url":"https:\/\/blog.fp-tower.com\/images\/monocle3-banner-102-high-res-01.png"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "logo": {
+          "@type":"ImageObject",
+          "url": "https://blog.fp-tower.com/images/logo.png"
+        },
+        "name": "fp-tower blog"
+      }
+    }
+  </script>
+
+<link rel = 'canonical' href = 'https://blog.fp-tower.com/2021-01-21-monocle-3-roadmap/'>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+<link rel = 'stylesheet' href = 'https://blog.fp-tower.com/main.0ea5c8e1ddd03f70fbf3e671c359680a575f716cd5255631b66d44e8a85fd12dfc9302935e9d5033c90398bdc9eebd5d4de651d64427ffe569e9b065cecfc256.css' integrity = 'sha512-DqXI4d3QP3D78&#43;Zxw1loCldfcWzVJVYxtm1E6Khf0S38kwKTXp1QM8kDmL3J7r1dTeZR1kQn/&#43;Vp6bBlzs/CVg=='>
+
+  </head>
+  <body>
+<header class = 'nav_header nav_fixed nav_home'>
+  <div class = 'nav_top wrap'>
+    <a class = 'nav_brand' href='https://www.fp-tower.com/'>
+      <img src = '/images/logo.png' class = 'nav_logo'>
+    </a>
+    <nav class = 'nav center'>
+      <a href = 'https://www.fp-tower.com/courses/foundations' class = 'nav_item '>
+        course
+      </a>
+      <a href = '/' class = 'nav_item '>
+        blog
+      </a>
+      <a href = '/contact-us/' class = 'nav_item '>
+        contact us
+      </a>
+      <a href = 'https://www.fp-tower.com' class = 'nav_item '>
+        jobs
+      </a>
+    </nav>
+    <div class = 'nav_toggle'>&#9776;</div>
+  </div>
+</header>
+
+    <main>
+<div class = 'page_banner' style = 'background-image:url(/images/monocle3-banner-102-high-res-01.png)'></div>
+<div class = 'grid-reverse wrap pt_2'>
+  <article class = 'contents'>
+    <div class = 'center pb_1'>
+      <h1 class = 'excerpt_title'>Monocle 3 Roadmap</h1>
+      <div class = 'meta'>
+  <span class = 'meta_date'>January 20, 2021</span>
+  <span class = 'meta_separator'>|</span>
+  
+<span class = 'meta_avatar avatar'>
+  <img src = '/images/julien-truffaut.jpg'>
+</span>
+<span class = 'meta_author'>
+  <a href = 'https://twitter.com/JulienTruffaut' target = '_blank' rel = 'noopener' title = 'Julien Truffaut linkedin'>
+    julien truffaut 
+    <span class = 'meta_tag tag'>FOLLOW</span>
+  </a>
+</span>
+
+</div>
+
+
+    </div><p>Monocle is quite an old Scala library. It was initially conceived in 2014 as a port of the <a href="https://hackage.haskell.org/package/lens">Haskell Lens</a> library.
+Over the years, we've adapted the optics encoding to better accommodate the JVM runtime and the unique blend of OOP and FP present in Scala.
+In turn, key aspects of Monocle’s design have been adapted for other programming languages such as <a href="https://arrow-kt.io/docs/optics/lens/">Kotlin</a> and <a href="https://github.com/functionaljava/functionaljava">Java</a>.</p>
+<p>Although Monocle is widely used in the Scala ecosystem, its API is complicated and quite verbose. In our next major version, Monocle 3, we intend to focus on user experience, especially for beginners. For this version, we have set four primary objectives, each of which will be expanded on below:</p>
+<ol>
+<li>Simpler API</li>
+<li>More pragmatic</li>
+<li>Smaller footprint</li>
+<li>Clearer documentation</li>
+</ol>
+<h2 id="timeline">Timeline</h2>
+<p>We plan to release the first milestone for Monocle 3 as soon as possible to gather feedback from existing users.
+Then, we'll set a few more milestones to incorporate feedback and include more complicated features such as macros.</p>
+<p>Our tentative timeline for Monocle 3:</p>
+<ul>
+<li>M1 (January 2021): early preview</li>
+<li>(March 2021): add macros and incorporate feedback from M1</li>
+<li>M3/RC1 (June 2021): Documentation and migration guide (preferably with scalafix)</li>
+</ul>
+<h2 id="how-can-i-help">How can I help?</h2>
+<p>You don't need to be an expert in optics to help us. You can contribute by doing any of the following:</p>
+<ol>
+<li>Try the new version and give us feedback on <a href="https://gitter.im/optics-dev/Monocle">Gitter</a> or <a href="https://github.com/optics-dev/Monocle/discussions">GitHub</a>.</li>
+<li>Share this article on social media or at your place of work.</li>
+<li>Report bugs or pain points with the API.</li>
+<li>Comment on the proposals in the issue tracker.</li>
+<li>Send us pull requests (let us know beforehand what you are working on).</li>
+</ol>
+<br>
+<h1 id="objectives-for-monocle-3">Objectives for Monocle 3</h1>
+<h2 id="1-simpler-api">1. Simpler API</h2>
+<p>The Monocle 2 API is complex and often requires in-depth knowledge of optics’ internals. In Monocle 3, we want to remove as much complexity as possible to improve user experience, particularly for new users.</p>
+<h3 id="11-optics-composition-issue-964httpsgithubcomoptics-devmonocleissues964">1.1 Optics composition (Issue <a href="https://github.com/optics-dev/Monocle/issues/964">#964</a>)</h3>
+<p><em>Planned for M1</em></p>
+<p>In Monocle 2, each optics have several compose functions such as <code>composeLens</code>, <code>composePrism</code>, <code>composeOptional</code> (see full table). This causes two problems:</p>
+<ol>
+<li>Verbose optics composition, <code>address composeOptional index(“home”) composeLens postcode</code>. Here, more than half of the code consists of composeX methods.</li>
+<li>Users need to know that <code>index</code> is an <code>Optional</code> while <code>postcode</code> is a <code>Lens</code>.</li>
+</ol>
+<p>Additionally, optics composition works very much like function composition; if you have an <code>Optic[A, B]</code> and <code>Optic[B, C]</code>, you can compose them to get an <code>Optic[A, C]</code>. However, in the example below, you will notice that the order of type parameters in <code>Optic#compose</code> is more similar to the <code>andThen</code> method of <code>Function1</code> than to <code>compose</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">Optic</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">]</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">compose</span><span class="o">[</span><span class="kt">C</span><span class="o">]</span><span class="o">(</span><span class="n">other</span><span class="k">:</span> <span class="kt">Optic</span><span class="o">[</span><span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="o">)</span><span class="k">:</span> <span class="kt">Function</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">C</span><span class="o">]</span>
+<span class="o">}</span>
+
+<span class="k">trait</span> <span class="nc">Function1</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">]</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">compose</span><span class="o">[</span><span class="kt">C</span><span class="o">]</span><span class="o">(</span><span class="n">other</span><span class="k">:</span> <span class="kt">Function1</span><span class="o">[</span><span class="kt">C</span>, <span class="kt">A</span><span class="o">]</span><span class="o">)</span><span class="k">:</span> <span class="kt">Function</span><span class="o">[</span><span class="kt">C</span>, <span class="kt">B</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">andThen</span><span class="o">[</span><span class="kt">C</span><span class="o">]</span><span class="o">(</span><span class="n">other</span><span class="k">:</span> <span class="kt">Function1</span><span class="o">[</span><span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="o">)</span><span class="k">:</span> <span class="kt">Function</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">C</span><span class="o">]</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Therefore, in Monocle 3, we will deprecate all <code>composeX</code> methods in favor of a new overloaded <code>andThen</code> method. This change may cause regression in the type inference when composing:</p>
+<ol>
+<li>Optics with type parameters, e.g. <code>some[A]</code>.</li>
+<li>Optics coming from typeclasses such as <code>index</code> or <code>each</code>.
+However, most of these issues should be fixed by “shortcuts for popular optics” (see below) and Scala 3 which has a much better type inference algorithm.</li>
+</ol>
+<h3 id="12-shortcuts-for-popular-optics-978httpsgithubcomoptics-devmonoclepull978">1.2 Shortcuts for popular optics <a href="https://github.com/optics-dev/Monocle/pull/978">#978</a>,</h3>
+<p><em>Planned for M1</em></p>
+<p>Some optics are extremely common, yet it can be challenging to find and figure out which is suitable. For example, common questions from users are:</p>
+<p>&quot;How can I zoom into an Option?&quot; or
+&quot;How can I access an element at a particular key within a Map? What if the key doesn't exist?&quot;</p>
+<p>This is partly a documentation problem, but it is also due to the nature of optics composition. You can compose almost any pair of optics together as long as the output type of the first matches the input type of the second. This freedom makes it difficult to decide which to use. At least, this was the case in Monocle 2. In Monocle 3, we will add methods on all optics for all common cases of optics compositions. For example,</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">address</span><span class="o">.</span><span class="n">some</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">postcode</span><span class="o">)</span>
+
+<span class="c1">// instead of
+</span><span class="c1"></span><span class="k">import</span> <span class="nn">monocle.std.option.some</span>
+
+<span class="n">address</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">some</span><span class="o">)</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">postcode</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>or</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">paymentMethods</span><span class="o">.</span><span class="n">index</span><span class="o">(</span><span class="err">“</span><span class="nc">Personal</span><span class="err">”</span><span class="o">)</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">expirationDate</span><span class="o">)</span>
+
+<span class="c1">// instead of
+</span><span class="c1"></span><span class="k">import</span> <span class="nn">monocle.function.Index.index</span>
+
+<span class="n">paymentMethods</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="err">“</span><span class="nc">Personal</span><span class="err">”</span><span class="o">)</span><span class="o">)</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">expirationDate</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>This change has multiple consequences:</p>
+<ol>
+<li>Users don’t need to add or learn about special imports.</li>
+<li>Users can use IDE completion to find out which optics are available.</li>
+<li>Side step type inference issue with overloaded <code>andThen</code> (see <a href="https://github.com/lampepfl/dotty/issues/8418">example</a> in Scala 3)</li>
+</ol>
+<h3 id="13-use-replace-instead-of-set-issue-961httpsgithubcomoptics-devmonocleissues961">1.3 Use replace instead of set (issue <a href="https://github.com/optics-dev/Monocle/issues/961">#961</a>)</h3>
+<p><em>Planned for M1</em></p>
+<p>One of the most frequent questions in the Monocle Gitter is:
+&quot;Why doesn't <code>set</code> insert a value when the input is None? &quot;</p>
+<p>In the example below, many users expect the result to be <code>User(&quot;John&quot;, Some(&quot;j@foo.com&quot;))</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">User</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">email</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span><span class="o">)</span>
+
+<span class="nc">GenLens</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">email</span><span class="o">)</span><span class="o">.</span><span class="n">some</span><span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">&#34;j@foo.com&#34;</span><span class="o">)</span><span class="o">(</span><span class="nc">User</span><span class="o">(</span><span class="s">&#34;John&#34;</span><span class="o">,</span> <span class="nc">None</span><span class="o">)</span><span class="o">)</span>
+<span class="c1">// res: User = User(&#34;John&#34;, None)
+</span></code></pre></td></tr></table>
+</div>
+</div><p>While this is a linguistic issue, not a bug: <code>set</code> implies it can insert a value when there is none, which is not possible. Therefore, we have decided to deprecate <code>set</code> in favor of <code>replace</code>. Hopefully, the latter indicates we are updating an existing value rather than inserting one.</p>
+<h3 id="14-focus-macro">1.4 Focus macro</h3>
+<p><em>Planned for M2</em></p>
+<p>Monocle offers several macros to automate optics creation:
+<code>GenLens</code> to focus into a field of a case class.
+<code>GenPrism</code> to focus into a branch of an enumeration (<code>sealed trait</code>).
+<code>GenIso</code> for new types (e.g. <code>case class Id(value: Long)</code>) or to see a case class as a tuple of fields.</p>
+<p>This approach presents a few issues:
+Users need to know which macro to use for their use case (barrier to entry)
+The code is still verbose when you need to mix different types of optics, e.g.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="nc">GenLens</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">)</span>                 <span class="c1">// focus into field
+</span><span class="c1"></span>  <span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="nc">GenPrism</span><span class="o">[</span><span class="kt">PaymentMethod</span>, <span class="kt">DebitCard</span><span class="o">]</span><span class="o">)</span> <span class="c1">// focus into a branch
+</span><span class="c1"></span>  <span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="nc">GenLens</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">)</span><span class="o">)</span>   <span class="c1">// focus into a field
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Instead, Monocle 3 will propose a single macro (to rule them all) and offer an API similar to XPath/JsonPath.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">]</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>No need to learn about and differentiate <code>Lens</code>, <code>Prism</code> or <code>Iso</code> anymore. The macro will generate the right type for the path.</p>
+<p>We are considering symbolic operators such as <code>?</code> to zoom into an <code>Option</code> or <code>*</code> to access all elements in a collection. This would provide a similar API to JsonPath, which users may be familiar with. Though we are also wary of using symbols as they cause difficulties while searching for them.</p>
+<p>We also plan to integrate <code>Focus</code> into <code>ApplyOptics</code> to facilitate a more object-oriented syntax:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">]</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">)</span><span class="o">.</span><span class="n">getOption</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>This syntax is particularly convenient for single-use optics as you don't need to give the optic name.</p>
+<p>Special thanks to <a href="https://twitter.com/_YilinWei_">Yilin Wei</a> for the original idea and <a href="https://twitter.com/KenScambler">Ken Scambler</a> and <a href="https://twitter.com/AsjadSB">Asjad Baig</a> for their contribution to this feature.</p>
+<p><code>Focus</code> macro will only be available in Monocle 3 for Scala 3. If you are using Scala 2, we will maintain the old macros for a few release cycles. It might be possible to port <code>Focus</code> to Scala 2, but it requires too much effort. This is also some good motivation to migrate to Scala 3 ;)</p>
+<h2 id="2-more-pragmatic">2. More pragmatic</h2>
+<p><em>Planned for M1</em></p>
+<p>Monocle defines properties (aka laws) for each optics. These properties are essentially a test suite that verifies optics behave as expected. For example, a <code>Lens</code> focuses on a <strong>single</strong> piece of data inside a case class; hence, the test suite verifies that the optic doesn't modify other parts of the object.</p>
+<p>Until now, we have refused to include any methods in the <code>core</code> module that could break those properties, even if the chances were slim and the use case extremely convenient. In Monocle 3, we plan to take a more pragmatic approach and allow those combinators if we judge they are useful enough. We will also document if and when they might cause surprising behaviors.</p>
+<p>You can find below a few examples of the new combinators.</p>
+<h3 id="21-withdefault">2.1 withDefault</h3>
+<p>To provide a default value in case an <code>Option</code> is empty.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">User</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">email</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">email</span> <span class="k">=</span> <span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">email</span><span class="o">)</span><span class="o">.</span><span class="n">withDefault</span><span class="o">(</span><span class="err">“</span><span class="n">no</span><span class="o">-</span><span class="n">reply</span><span class="nd">@foo</span><span class="o">.</span><span class="n">com</span><span class="err">”</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">bob</span> <span class="k">=</span> <span class="nc">User</span><span class="o">(</span><span class="err">“</span><span class="n">bob</span><span class="err">”</span><span class="o">,</span> <span class="nc">None</span><span class="o">)</span>
+
+<span class="n">email</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">bob</span><span class="o">)</span>
+<span class="c1">// res: String = “no-reply@foo.com”
+</span><span class="c1"></span>
+
+<span class="n">email</span><span class="o">.</span><span class="n">modify</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">toUpperCase</span><span class="o">)</span><span class="o">(</span><span class="n">bob</span><span class="o">)</span>
+<span class="c1">// User(“bob”,Some(“NO-REPLY@FOO.COM”))
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="22-filter">2.2 filter</h3>
+<p>To select a target based on its value.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">Order</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">items</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">Item</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">quantity</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">unitPrice</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">order</span> <span class="k">=</span> <span class="nc">Order</span><span class="o">(</span><span class="mi">123</span><span class="o">,</span> <span class="nc">List</span><span class="o">(</span>
+  <span class="nc">Item</span><span class="o">(</span><span class="s">&#34;Lego set&#34;</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mf">13.99</span><span class="o">)</span><span class="o">,</span>
+  <span class="nc">Item</span><span class="o">(</span><span class="s">&#34;Puzzle&#34;</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mf">8.99</span><span class="o">)</span><span class="o">,</span>
+  <span class="nc">Item</span><span class="o">(</span><span class="s">&#34;Book&#34;</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mf">11.49</span><span class="o">)</span>
+<span class="o">)</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">expensiveItems</span> <span class="k">=</span> <span class="nc">Focus</span><span class="o">[</span><span class="kt">Order</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">items</span><span class="o">)</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">unitPrice</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="o">)</span>
+
+<span class="n">expensiveItems</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="nc">Focus</span><span class="o">[</span><span class="kt">Item</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">quantity</span><span class="o">)</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span><span class="o">(</span><span class="n">orders</span><span class="o">)</span>
+<span class="c1">// res: Order = Order(123, List(
+</span><span class="c1"></span><span class="c1">//    Item(“Lego set”, 1, 13.99),  
+</span><span class="c1"></span><span class="c1">//    Item(&#34;Puzzle&#34;, 1, 8.99),
+</span><span class="c1"></span><span class="c1">//    Item(“Book”, 1, 11.49)
+</span><span class="c1"></span><span class="c1">//  ))
+</span><span class="c1"></span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="3-smaller-footprint">3. Smaller footprint</h2>
+<p><em>Planned for M1</em></p>
+<p>Remove rarely-used features and simplify the build to reduce maintainer workload.</p>
+<ol>
+<li>Drop Scala 2.12</li>
+<li>Use <code>at</code> with a singleton instead of dedicated methods, e.g., <code>first</code> becomes <code>at(1)</code>, <code>second</code> becomes <code>at(2)</code>, and so on.</li>
+<li>Deprecate symbolic operators <code>^|-?</code>, <code>|-&gt;</code>, <code>&amp;|-&gt;</code>, <code>_1</code>, <code>_2</code>, and so on.</li>
+<li>Deprecate <code>head</code>, <code>headOption</code>, <code>tail</code>, <code>tailOption</code>, <code>empty</code>, <code>possible</code>, <code>reverse</code>, <code>last</code>, <code>lastOption</code>, <code>init</code>, <code>initOption</code>, <code>curry</code>, <code>uncurry</code>.</li>
+<li>Deprecate the generic module (shapeless dependency).</li>
+<li>Deprecate the state module. If you are a heavy user of the state module, we encourage you to create a separate library.</li>
+</ol>
+<h2 id="4-clearer-documentation">4. Clearer documentation</h2>
+<h3 id="41-scalafix-migration">4.1 Scalafix migration</h3>
+<p><em>Planned for M3</em></p>
+<p>Automate the migration from Monocle 2 to 3 using Scalafix. See this list of API changes <a href="https://github.com/optics-dev/Monocle/issues/1001">#1001</a>.</p>
+<h3 id="42-new-website">4.2 New website</h3>
+<p><em>Planned for M3</em></p>
+<p>The current microsite is too focused on optics internals. We need to rewrite the documentation from scratch with a particular focus on the “Getting Started” section to better onboard new users.</p>
+<h3 id="43-online-course">4.3 Online course</h3>
+<p><em>Late 2021</em></p>
+<p>FP-Tower is considering a short (3-5 hours) online course around Monocle API and optics fundamentals. If you would be interested in this type of resource, please let us know.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>We hope that the Monocle 3 API will be simple enough for Scala developers to reach for whenever they need to access or transform immutable data. We believe that the <code>Focus</code> macro and other API simplifications will help us achieve that goal. However, we need your help in testing both the documentation and each Monocle 3 milestone to ensure we don’t miss our targets.</p>
+<p>Have a great day everyone, happy coding.</p>
+<p>You can discuss this article on reddit.</p>
+
+  </article>
+  <aside class = 'aside'><div class = 'aside_widget'>
+  <h3 class = 'mb_1 font_light'>Tags</h3>
+<div class = 'tags'>
+  
+</div>
+
+<div class = 'tags'>
+  
+  <a href = 'https://blog.fp-tower.com/tags/monocle/' class = 'tag'>monocle</a>
+   
+  <a href = 'https://blog.fp-tower.com/tags/scala/' class = 'tag'>scala</a>
+   
+  <a href = 'https://blog.fp-tower.com/tags/foundations/' class = 'tag'>foundations</a>
+   
+  <a href = 'https://blog.fp-tower.com/tags/video-production/' class = 'tag'>video-production</a>
+   
+</div>
+
+
+  
+  
+  <section class = 'course'>
+    <h3>LEARN TO DESIGN AND TEST FUNCTIONAL API</h3>
+    <p>Do you want to learn the practical side of functional programming and take your career to the next level? <a href="https://www.fp-tower.com">Take our course</a></p>
+  </section>
+</div>
+
+  </aside>
+</div>
+<div class = "banner">
+  <script async data-uid="58e1a4e5c4" src="https://fp-tower.ck.page/58e1a4e5c4/index.js"></script>
+
+</div>
+    </main>
+<footer class = 'footer'>
+  <div class = 'wrap footer_inner'>
+    <div class  = 'footer_icons footer_row'>
+      <span class = 'font_semibold'>STAY IN TOUCH</span>&nbsp;&nbsp; 
+      
+      <a href = 'https://twitter.com/TheFpTower' target = '_blank' rel = 'noopener' title = 'follow on twitter' class = 'footer_icon twitter'></a>
+      
+      <a href = 'https://www.youtube.com/c/fptower-programming' target = '_blank' rel = 'noopener' title = 'follow on youtube' class = 'footer_icon youtube'></a>
+      
+      <a href = 'https://fp-tower.slack.com/' target = '_blank' rel = 'noopener' title = 'follow on slack' class = 'footer_icon slack'></a>
+      
+      <a href = 'https://github.com/fp-tower' target = '_blank' rel = 'noopener' title = 'follow on github' class = 'footer_icon github'></a>
+      
+    </div>
+    <div class = 'footer_row footer_lower'>
+      <span>Copyright 2021 fp-tower LTD</span>
+      <a class = 'nav_brand' href='https://www.fp-tower.com/'>
+        <img src = '/images/logo.png' class = 'footer_logo'>
+      </a>
+      <div class = 'nav_parent'>
+        <a href = 'https://www.fp-tower.com/pages/privacy' class = ''>Privacy Policy</a>
+        <a href = '' class = ''>.</a>
+        <a href = 'https://www.fp-tower.com/pages/terms' class = ''>Terms &amp; Conditions</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    <script src = 'https://blog.fp-tower.com/js/index.js'></script>
+  </body>
+</html>

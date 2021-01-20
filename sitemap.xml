@@ -4,7 +4,22 @@
   
   <url>
     <loc>https://blog.fp-tower.com/</loc>
-    <lastmod>2021-01-04T00:00:00+00:00</lastmod>
+    <lastmod>2021-01-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.fp-tower.com/tags/monocle/</loc>
+    <lastmod>2021-01-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.fp-tower.com/2021-01-21-monocle-3-roadmap/</loc>
+    <lastmod>2021-01-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.fp-tower.com/tags/</loc>
+    <lastmod>2021-01-20T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -14,11 +29,6 @@
   
   <url>
     <loc>https://blog.fp-tower.com/tags/foundations/</loc>
-    <lastmod>2021-01-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://blog.fp-tower.com/tags/</loc>
     <lastmod>2021-01-04T00:00:00+00:00</lastmod>
   </url>
   
@@ -35,11 +45,6 @@
   <url>
     <loc>https://blog.fp-tower.com/tags/scala/</loc>
     <lastmod>2020-10-20T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://blog.fp-tower.com/tags/monocle/</loc>
-    <lastmod>2020-04-07T00:00:00+00:00</lastmod>
   </url>
   
   <url>
