@@ -6,7 +6,7 @@
     <description>Recent content in Blog on fp-tower blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 20 Jan 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 19 Jan 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://blog.fp-tower.com/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>Monocle 3 Roadmap</title>
       <link>https://blog.fp-tower.com/2021-01-21-monocle-3-roadmap/</link>
-      <pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 19 Jan 2021 00:00:00 +0000</pubDate>
       
       <guid>https://blog.fp-tower.com/2021-01-21-monocle-3-roadmap/</guid>
       <description>Monocle is quite an old Scala library. It was initially conceived in 2014 as a port of the Haskell Lens library. Over the years, we&#39;ve adapted the optics encoding to better accommodate the JVM runtime and the unique blend of OOP and FP present in Scala. In turn, key aspects of Monocle’s design have been adapted for other programming languages such as Kotlin and Java.
