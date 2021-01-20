@@ -288,10 +288,12 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
+</span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">streetNumber</span><span class="o">)</span>
-<span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">]</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">)</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">]</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">)</span>
+<span class="c1">// or with a simpler example
+</span><span class="c1"></span><span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">streetNumber</span><span class="o">)</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>No need to learn about and differentiate <code>Lens</code>, <code>Prism</code> or <code>Iso</code> anymore. The macro will generate the right type for the path.</p>
@@ -303,8 +305,8 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">streetNumber</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">15</span><span class="o">)</span>
-<span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">]</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">)</span><span class="o">.</span><span class="n">getOption</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">]</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">)</span><span class="o">.</span><span class="n">getOption</span>
+<span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">streetNumber</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">15</span><span class="o">)</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>This syntax is particularly convenient for single-use optics as you don't need to give the optic name.</p>
@@ -405,7 +407,16 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
 <p><em>Late 2021</em></p>
 <p>FP-Tower is considering a short (3-5 hours) online course around Monocle API and optics fundamentals. If you would be interested in this type of resource, please <a href="/contact-us/">let us know</a>.</p>
 <h2 id="conclusion">Conclusion</h2>
-<p>We hope that the Monocle 3 API will be simple enough for Scala developers to reach for whenever they need to access or transform immutable data. We believe that the <code>Focus</code> macro and other API simplifications will help us achieve that goal. However, we need your help in testing both the documentation and each Monocle 3 milestone to ensure we don’t miss our targets.</p>
+<p>We hope that the Monocle 3 API will be simple enough for Scala developers to reach for whenever they need to access or transform immutable data. We believe that the <code>Focus</code> macro and other API simplifications will help us achieve that goal.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">streetNumber</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">15</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>However, we need your help in testing both the documentation and each Monocle 3 milestone to ensure we don’t miss our targets.</p>
 <p>Have a great day everyone, happy coding.</p>
 <p>You can discuss this article on reddit.</p>
 
