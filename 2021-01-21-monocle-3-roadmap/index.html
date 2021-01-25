@@ -12,21 +12,22 @@
 <link rel="icon" type="image/png" sizes="32x32" href='https://blog.fp-tower.com/images/icons/favicon-32x32.png'>
 <link rel="icon" type="image/png" sizes="16x16" href='https://blog.fp-tower.com/images/icons/favicon-16x16.png'>
   
-<meta name = 'keywords' content = 'fp-tower blog'>
+
+<meta name="keywords" content="fp-tower blog">
 <meta name="description" content="Monocle is quite an old Scala library. It was initially conceived in 2014 as a port of the Haskell Lens library. Over the years, we&#39;ve adapted the optics …">
 <meta property="og:site_name" content="fp-tower blog">
 <meta property="og:title" content="Monocle 3 Roadmap">
 <meta property="og:description" content="Monocle is quite an old Scala library. It was initially conceived in 2014 as a port of the Haskell Lens library. Over the years, we&#39;ve adapted the optics …">
 <meta property="og:type" content="article">
-<meta property = 'og:image' content = 'https://blog.fp-tower.com/images/monocle3-banner-102-high-res-01.png'/>
+<meta property="og:image" content="https://blog.fp-tower.com/images/monocle3-banner-102-high-res-01.png">
 <meta property="og:url" content="https://blog.fp-tower.com/2021-01-21-monocle-3-roadmap/">
-<meta name = 'twitter:card' content = 'summary_large_image' />
-<meta name = 'twitter:creator' content = '@fptower'>
-<meta name = 'twitter:title' content = 'Monocle 3 Roadmap' />
-<meta property = 'twitter:description'  content = 'Monocle is quite an old Scala library. It was initially conceived in 2014 as a port of the Haskell Lens library. Over the years, we&#39;ve adapted the optics …'/>
-<meta name = 'twitter:image' content = 'https://blog.fp-tower.com/images/monocle3-banner-102-high-res-01.png' />
-  <meta property = 'article:published_time' content = '2021-01-20 00:00:00 &#43;0000 GMT' />
-  <script type = "application/ld+json">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@fptower">
+<meta name="twitter:title" content="Monocle 3 Roadmap">
+<meta name="twitter:description"  content="Monocle is quite an old Scala library. It was initially conceived in 2014 as a port of the Haskell Lens library. Over the years, we&#39;ve adapted the optics …">
+<meta name="twitter:image" content="https://blog.fp-tower.com/images/monocle3-banner-102-high-res-01.png">
+  <meta property="article:published_time" content="2021-01-20 00:00:00 &#43;0000 GMT">
+  <script type="application/ld+json">
     {
       "@context": "http://schema.org",
       "@type": "BlogPosting",
@@ -58,7 +59,7 @@
 
 <link rel = 'canonical' href = 'https://blog.fp-tower.com/2021-01-21-monocle-3-roadmap/'>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
-<link rel = 'stylesheet' href = 'https://blog.fp-tower.com/main.0ea5c8e1ddd03f70fbf3e671c359680a575f716cd5255631b66d44e8a85fd12dfc9302935e9d5033c90398bdc9eebd5d4de651d64427ffe569e9b065cecfc256.css' integrity = 'sha512-DqXI4d3QP3D78&#43;Zxw1loCldfcWzVJVYxtm1E6Khf0S38kwKTXp1QM8kDmL3J7r1dTeZR1kQn/&#43;Vp6bBlzs/CVg=='>
+<link rel = 'stylesheet' href = 'https://blog.fp-tower.com/main.b4f94734ab9bb9b2149afa1e17658d8984eaa09d3a63fc93c00918a18204ba864e4eeaadd0bee5d3a5f5bd4e2bb4578ae9eddb09eda4edd5a63d5ba326877e5a.css' integrity = 'sha512-tPlHNKububIUmvoeF2WNiYTqoJ06Y/yTwAkYoYIEuoZOTuqt0L7l06X1vU4rtFeK6e3bCe2k7dWmPVujJod&#43;Wg=='>
 
   </head>
   <body>
@@ -161,12 +162,12 @@ Then, we'll set a few more milestones to incorporate feedback and include more c
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">Optic</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">]</span> <span class="o">{</span>
-  <span class="k">def</span> <span class="n">compose</span><span class="o">[</span><span class="kt">C</span><span class="o">]</span><span class="o">(</span><span class="n">other</span><span class="k">:</span> <span class="kt">Optic</span><span class="o">[</span><span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="o">)</span><span class="k">:</span> <span class="kt">Function</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">C</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">compose</span><span class="o">[</span><span class="kt">C</span><span class="o">](</span><span class="n">other</span><span class="k">:</span> <span class="kt">Optic</span><span class="o">[</span><span class="kt">B</span>, <span class="kt">C</span><span class="o">])</span><span class="k">:</span> <span class="kt">Function</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">C</span><span class="o">]</span>
 <span class="o">}</span>
 
 <span class="k">trait</span> <span class="nc">Function1</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">]</span> <span class="o">{</span>
-  <span class="k">def</span> <span class="n">compose</span><span class="o">[</span><span class="kt">C</span><span class="o">]</span><span class="o">(</span><span class="n">other</span><span class="k">:</span> <span class="kt">Function1</span><span class="o">[</span><span class="kt">C</span>, <span class="kt">A</span><span class="o">]</span><span class="o">)</span><span class="k">:</span> <span class="kt">Function</span><span class="o">[</span><span class="kt">C</span>, <span class="kt">B</span><span class="o">]</span>
-  <span class="k">def</span> <span class="n">andThen</span><span class="o">[</span><span class="kt">C</span><span class="o">]</span><span class="o">(</span><span class="n">other</span><span class="k">:</span> <span class="kt">Function1</span><span class="o">[</span><span class="kt">B</span>, <span class="kt">C</span><span class="o">]</span><span class="o">)</span><span class="k">:</span> <span class="kt">Function</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">C</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">compose</span><span class="o">[</span><span class="kt">C</span><span class="o">](</span><span class="n">other</span><span class="k">:</span> <span class="kt">Function1</span><span class="o">[</span><span class="kt">C</span>, <span class="kt">A</span><span class="o">])</span><span class="k">:</span> <span class="kt">Function</span><span class="o">[</span><span class="kt">C</span>, <span class="kt">B</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">andThen</span><span class="o">[</span><span class="kt">C</span><span class="o">](</span><span class="n">other</span><span class="k">:</span> <span class="kt">Function1</span><span class="o">[</span><span class="kt">B</span>, <span class="kt">C</span><span class="o">])</span><span class="k">:</span> <span class="kt">Function</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">C</span><span class="o">]</span>
 <span class="o">}</span>
 </code></pre></td></tr></table>
 </div>
@@ -208,7 +209,7 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
 </span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">User</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">addresses</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Address</span><span class="o">]</span><span class="o">)</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">User</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">addresses</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Address</span><span class="o">])</span>
 
 <span class="k">case</span> <span class="k">class</span> <span class="nc">Address</span><span class="o">(</span>
   <span class="n">streetNumber</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> 
@@ -216,18 +217,18 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
   <span class="n">county</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
 <span class="o">)</span>
 
-<span class="k">val</span> <span class="n">addresses</span> <span class="k">=</span> <span class="nc">GenLens</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">addresses</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">county</span>    <span class="k">=</span> <span class="nc">GenLens</span><span class="o">[</span><span class="kt">Address</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">county</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">addresses</span> <span class="k">=</span> <span class="nc">GenLens</span><span class="o">[</span><span class="kt">User</span><span class="o">](</span><span class="k">_</span><span class="o">.</span><span class="n">addresses</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">county</span>    <span class="k">=</span> <span class="nc">GenLens</span><span class="o">[</span><span class="kt">Address</span><span class="o">](</span><span class="k">_</span><span class="o">.</span><span class="n">county</span><span class="o">)</span>
 
 <span class="c1">// Monocle 3
-</span><span class="c1"></span><span class="n">addresses</span><span class="o">.</span><span class="n">index</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="n">county</span><span class="o">)</span><span class="o">.</span><span class="n">some</span>
+</span><span class="c1"></span><span class="n">addresses</span><span class="o">.</span><span class="n">index</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">andThen</span><span class="o">(</span><span class="n">county</span><span class="o">).</span><span class="n">some</span>
 
 <span class="c1">// Monocle 2
 </span><span class="c1"></span><span class="k">import</span> <span class="nn">monocle.function.Index.index</span>
 <span class="k">import</span> <span class="nn">monocle.std.option.some</span>
 
 <span class="n">addresses</span>
-  <span class="o">.</span><span class="n">composeOptional</span><span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">composeOptional</span><span class="o">(</span><span class="n">index</span><span class="o">(</span><span class="mi">1</span><span class="o">))</span>
   <span class="o">.</span><span class="n">composeLens</span><span class="o">(</span><span class="n">county</span><span class="o">)</span>
   <span class="o">.</span><span class="n">composePrism</span><span class="o">(</span><span class="n">some</span><span class="o">)</span>
 </code></pre></td></tr></table>
@@ -251,9 +252,9 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">User</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">email</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span><span class="o">)</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">User</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">email</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span>
 
-<span class="nc">GenLens</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">email</span><span class="o">)</span><span class="o">.</span><span class="n">some</span><span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">&#34;j@foo.com&#34;</span><span class="o">)</span><span class="o">(</span><span class="nc">User</span><span class="o">(</span><span class="s">&#34;John&#34;</span><span class="o">,</span> <span class="nc">None</span><span class="o">)</span><span class="o">)</span>
+<span class="nc">GenLens</span><span class="o">[</span><span class="kt">User</span><span class="o">](</span><span class="k">_</span><span class="o">.</span><span class="n">email</span><span class="o">).</span><span class="n">some</span><span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">&#34;j@foo.com&#34;</span><span class="o">)(</span><span class="nc">User</span><span class="o">(</span><span class="s">&#34;John&#34;</span><span class="o">,</span> <span class="nc">None</span><span class="o">))</span>
 <span class="c1">// res: User = User(&#34;John&#34;, None)
 </span></code></pre></td></tr></table>
 </div>
@@ -278,9 +279,9 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="nc">GenLens</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">)</span>                 <span class="c1">// focus into field
-</span><span class="c1"></span>  <span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="nc">GenPrism</span><span class="o">[</span><span class="kt">PaymentMethod</span>, <span class="kt">DebitCard</span><span class="o">]</span><span class="o">)</span> <span class="c1">// focus into a branch
-</span><span class="c1"></span>  <span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="nc">GenLens</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">)</span><span class="o">)</span>   <span class="c1">// focus into a field
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="nc">GenLens</span><span class="o">[</span><span class="kt">User</span><span class="o">](</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">)</span>                 <span class="c1">// focus into field
+</span><span class="c1"></span>  <span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="nc">GenPrism</span><span class="o">[</span><span class="kt">PaymentMethod</span>, <span class="kt">DebitCard</span><span class="o">])</span> <span class="c1">// focus into a branch
+</span><span class="c1"></span>  <span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="nc">GenLens</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">](</span><span class="k">_</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">))</span>   <span class="c1">// focus into a field
 </span></code></pre></td></tr></table>
 </div>
 </div><p>Instead, Monocle 3 will propose a single macro (to rule them all) and offer an API similar to XPath/JsonPath.</p>
@@ -291,9 +292,9 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">]</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">)</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">](</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">].</span><span class="n">cardNumber</span><span class="o">)</span>
 <span class="c1">// or with a simpler example
-</span><span class="c1"></span><span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">streetNumber</span><span class="o">)</span>
+</span><span class="c1"></span><span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">](</span><span class="k">_</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">streetNumber</span><span class="o">)</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>No need to learn about and differentiate <code>Lens</code>, <code>Prism</code> or <code>Iso</code> anymore. The macro will generate the right type for the path.</p>
@@ -305,8 +306,8 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">]</span><span class="o">.</span><span class="n">cardNumber</span><span class="o">)</span><span class="o">.</span><span class="n">getOption</span>
-<span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">streetNumber</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">15</span><span class="o">)</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">paymentMethod</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">DebitCard</span><span class="o">].</span><span class="n">cardNumber</span><span class="o">).</span><span class="n">getOption</span>
+<span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">streetNumber</span><span class="o">).</span><span class="n">replace</span><span class="o">(</span><span class="mi">15</span><span class="o">)</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>This syntax is particularly convenient for single-use optics as you don't need to give the optic name.</p>
@@ -332,14 +333,14 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">User</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">email</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">email</span> <span class="k">=</span> <span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">email</span><span class="o">)</span><span class="o">.</span><span class="n">withDefault</span><span class="o">(</span><span class="s">&#34;no-reply@foo.com&#34;</span><span class="o">)</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">User</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">email</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span>
+<span class="k">val</span> <span class="n">email</span> <span class="k">=</span> <span class="nc">Focus</span><span class="o">[</span><span class="kt">User</span><span class="o">](</span><span class="k">_</span><span class="o">.</span><span class="n">email</span><span class="o">).</span><span class="n">withDefault</span><span class="o">(</span><span class="s">&#34;no-reply@foo.com&#34;</span><span class="o">)</span>
 <span class="k">val</span> <span class="n">bob</span> <span class="k">=</span> <span class="nc">User</span><span class="o">(</span><span class="s">&#34;bob&#34;</span><span class="o">,</span> <span class="nc">None</span><span class="o">)</span>
 
 <span class="n">email</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">bob</span><span class="o">)</span>
 <span class="c1">// res: String = &#34;no-reply@foo.com&#34;
 </span><span class="c1"></span>
-<span class="n">email</span><span class="o">.</span><span class="n">modify</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">toUpperCase</span><span class="o">)</span><span class="o">(</span><span class="n">bob</span><span class="o">)</span>
+<span class="n">email</span><span class="o">.</span><span class="n">modify</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">toUpperCase</span><span class="o">)(</span><span class="n">bob</span><span class="o">)</span>
 <span class="c1">// User(&#34;bob&#34;,Some(&#34;NO-REPLY@FOO.COM&#34;))
 </span></code></pre></td></tr></table>
 </div>
@@ -366,23 +367,23 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">Order</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">items</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span><span class="o">)</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">Order</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">items</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span>
 <span class="k">case</span> <span class="k">class</span> <span class="nc">Item</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">quantity</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">unitPrice</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span>
 
 <span class="k">val</span> <span class="n">order</span> <span class="k">=</span> <span class="nc">Order</span><span class="o">(</span><span class="mi">123</span><span class="o">,</span> <span class="nc">List</span><span class="o">(</span>
-  <span class="nc">Item</span><span class="o">(</span><span class="s">&#34;Lego set&#34;</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mf">13.99</span><span class="o">)</span><span class="o">,</span>
-  <span class="nc">Item</span><span class="o">(</span><span class="s">&#34;Puzzle&#34;</span>  <span class="o">,</span> <span class="mi">3</span><span class="o">,</span>  <span class="mf">8.99</span><span class="o">)</span><span class="o">,</span>
+  <span class="nc">Item</span><span class="o">(</span><span class="s">&#34;Lego set&#34;</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mf">13.99</span><span class="o">),</span>
+  <span class="nc">Item</span><span class="o">(</span><span class="s">&#34;Puzzle&#34;</span>  <span class="o">,</span> <span class="mi">3</span><span class="o">,</span>  <span class="mf">8.99</span><span class="o">),</span>
   <span class="nc">Item</span><span class="o">(</span><span class="s">&#34;Book&#34;</span>    <span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mf">11.49</span><span class="o">)</span>
-<span class="o">)</span><span class="o">)</span>
+<span class="o">))</span>
 
-<span class="k">val</span> <span class="n">expensiveItems</span> <span class="k">=</span> <span class="nc">Focus</span><span class="o">[</span><span class="kt">Order</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">items</span><span class="o">)</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">unitPrice</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">expensiveItems</span> <span class="k">=</span> <span class="nc">Focus</span><span class="o">[</span><span class="kt">Order</span><span class="o">](</span><span class="k">_</span><span class="o">.</span><span class="n">items</span><span class="o">).</span><span class="n">filter</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">unitPrice</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="o">)</span>
 
-<span class="n">expensiveItems</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="nc">Focus</span><span class="o">[</span><span class="kt">Item</span><span class="o">]</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">quantity</span><span class="o">)</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span><span class="o">(</span><span class="n">orders</span><span class="o">)</span>
+<span class="n">expensiveItems</span><span class="o">.</span><span class="n">andThen</span><span class="o">(</span><span class="nc">Focus</span><span class="o">[</span><span class="kt">Item</span><span class="o">](</span><span class="k">_</span><span class="o">.</span><span class="n">quantity</span><span class="o">)).</span><span class="n">replace</span><span class="o">(</span><span class="mi">1</span><span class="o">)(</span><span class="n">orders</span><span class="o">)</span>
 <span class="c1">// res: Order = Order(123, List(
-</span><span class="c1"></span><span class="c1">//    Item(&#34;Lego set&#34;, 1, 13.99), // UPDATED
-</span><span class="c1"></span><span class="c1">//    Item(&#34;Puzzle&#34;  , 3,  8.99), 
-</span><span class="c1"></span><span class="c1">//    Item(&#34;Book&#34;    , 1, 11.49)  // UPDATED
-</span><span class="c1"></span><span class="c1">//  ))
+</span><span class="c1">//    Item(&#34;Lego set&#34;, 1, 13.99), // UPDATED
+</span><span class="c1">//    Item(&#34;Puzzle&#34;  , 3,  8.99), 
+</span><span class="c1">//    Item(&#34;Book&#34;    , 1, 11.49)  // UPDATED
+</span><span class="c1">//  ))
 </span></code></pre></td></tr></table>
 </div>
 </div><h2 id="3-smaller-footprint">3. Smaller footprint</h2>
@@ -413,7 +414,7 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
 <pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">streetNumber</span><span class="o">)</span><span class="o">.</span><span class="n">replace</span><span class="o">(</span><span class="mi">15</span><span class="o">)</span>
+<pre class="chroma"><code class="language-scala" data-lang="scala"><span class="n">user</span><span class="o">.</span><span class="n">focus</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">streetNumber</span><span class="o">).</span><span class="n">replace</span><span class="o">(</span><span class="mi">15</span><span class="o">)</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>However, we need your help in testing both the documentation and each Monocle 3 milestone to ensure we don’t miss our targets.</p>
@@ -421,8 +422,9 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
 <p>You can discuss this article on <a href="https://www.reddit.com/r/scala/comments/l1ugt5/monocle_3_roadmap/">reddit</a>.</p>
 
   </article>
-  <aside class = 'aside'><div class = 'aside_widget'>
-  <h3 class = 'mb_1 font_light'>Tags</h3>
+  <aside class = 'aside'><aside class = 'aside'>
+  <div class = 'aside_widget'>
+    <h3 class = 'mb_1 font_light'>Tags</h3>
 <div class = 'tags'>
   
 </div>
@@ -435,18 +437,19 @@ However, most of these issues should be fixed by &quot;shortcuts for popular opt
    
   <a href = 'https://blog.fp-tower.com/tags/foundations/' class = 'tag'>foundations</a>
    
-  <a href = 'https://blog.fp-tower.com/tags/video-production/' class = 'tag'>video-production</a>
+  <a href = 'https://blog.fp-tower.com/tags/video-production/' class = 'tag'>video production</a>
    
 </div>
 
 
-  
-  
-  <section class = 'course'>
-    <h3>LEARN TO DESIGN AND TEST FUNCTIONAL APIS</h3>
-    <p>Do you want to learn the practical side of functional programming and take your career to the next level? <a href="https://www.fp-tower.com">Take our course</a></p>
-  </section>
-</div>
+    
+      
+    <section class = 'course'>
+      <h3>LEARN TO DESIGN AND TEST FUNCTIONAL APIS</h3>
+      <p>Do you want to learn the practical side of functional programming and take your career to the next level? <a href="https://www.fp-tower.com">Take our course</a></p>
+    </section>
+  </div>
+</aside>
 
   </aside>
 </div>

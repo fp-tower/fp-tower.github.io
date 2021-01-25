@@ -5,10 +5,6 @@
     <link>https://blog.fp-tower.com/contact-us/</link>
     <description>Recent content in Contact Us on fp-tower blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
-    
-	<atom:link href="https://blog.fp-tower.com/contact-us/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <language>en</language><atom:link href="https://blog.fp-tower.com/contact-us/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>
